@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cache xmlns="http://schema.pivotal.io/gemfire/cache" xmlns:gpdb="http://schema.pivotal.io/gemfire/gpdb"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://schema.pivotal.io/gemfire/cache http://schema.pivotal.io/gemfire/cache/cache-8.1.xsd
+                        http://schema.pivotal.io/gemfire/gpdb http://schema.pivotal.io/gemfire/gpdb/gpdb-1.0.xsd"
+	version="8.1">
+
+	<pdx read-serialized="true" persistent="false">
+		<pdx-serializer>
+			<class-name>com.gemstone.gemfire.pdx.ReflectionBasedAutoSerializer</class-name>
+			<parameter name="classes">
+				<string>io.pivotal.gemfire.sko.entity.*</string>
+			</parameter>
+		</pdx-serializer>
+	</pdx>
+	<jndi-bindings>
+		<jndi-binding jndi-name="datasource" type="SimpleDataSource"
+			jdbc-driver-class="org.postgresql.Driver" user-name="pivotal"
+			password="pivotal" connection-url="jdbc:postgresql://192.168.9.132:5432/gemfire">
+		</jndi-binding>
+	</jndi-bindings>
+	<region name="PoS">
+		<region-attributes refid="PARTITION">
+			<partition-attributes redundant-copies="1" />
+		</region-attributes>
+		<gpdb:store datasource="datasource">
+			<gpdb:synchronize mode="automatic" time-interval="3000" persistent="false" />
+			<gpdb:types>
+				<gpdb:pdx name="io.pivotal.sko.demo.entity.PoSDevice"
+					table="POS_DEVICE">
+					<gpdb:id field="id" />
+					<gpdb:fields>
+						<gpdb:field name="id" column="id" />
+						<gpdb:field name="location" />
+						<gpdb:field name="merchantName" column="merchant_name" />						
+					</gpdb:fields>
+				</gpdb:pdx>
+			</gpdb:types>
+		</gpdb:store>
+	</region>
+	<region name="Transaction">
+		<region-attributes refid="PARTITION">
+			<partition-attributes redundant-copies="1"
+				colocated-with="PoS">
+				<partition-resolver>
+					<class-name>io.pivotal.gemfire.gpdb.IdPartitionResolver</class-name>
+					<parameter name="field">
+						<string>deviceId</string>
+					</parameter>
+				</partition-resolver>
+			</partition-attributes>
+		</region-attributes>
+		<gpdb:store datasource="datasource">
+			<gpdb:synchronize mode="automatic" time-interval="3000" persistent="false" />		
+			<gpdb:types>
+				<gpdb:pdx name="io.pivotal.gemfire.sko.entity.Transaction"
+					table="TRANSACTION">
+					<gpdb:id>
+						<gpdb:field ref="id" />
+					</gpdb:id>
+					<gpdb:fields>
+						<gpdb:field name="id" />
+						<gpdb:field name="deviceId" column="device_id" />
+						<gpdb:field name="value" column="transaction_value" />
+						<gpdb:field name="accountId" column="account_id" />
+						<gpdb:field name="timestamp" column="ts_millis" />
+					</gpdb:fields>
+				</gpdb:pdx>
+			</gpdb:types>
+		</gpdb:store>
+	</region>
+	<region name="Suspect">
+		<region-attributes refid="PARTITION">
+			<partition-attributes redundant-copies="1"
+				colocated-with="Transaction">
+				<partition-resolver>
+					<class-name>io.pivotal.gemfire.gpdb.IdPartitionResolver</class-name>
+					<parameter name="field">
+						<string>deviceId</string>
+					</parameter>
+				</partition-resolver>
+			</partition-attributes>
+		</region-attributes>
+		<gpdb:store datasource="datasource">
+			<gpdb:synchronize mode="automatic" time-interval="3000" persistent="false" />		
+			<gpdb:types>
+				<gpdb:pdx name="io.pivotal.gemfire.sko.entity.Suspect" 
+					table="SUSPECT">
+					<gpdb:id>
+						<gpdb:field ref="transactionId" />
+					</gpdb:id>
+					<gpdb:fields>
+						<gpdb:field name="transactionId" column="transaction_id" />
+						<gpdb:field name="deviceId" column="device_id" />
+						<gpdb:field name="markedSuspectMillis" column="marked_suspect_ts_millis" />
+					</gpdb:fields>
+				</gpdb:pdx>
+			</gpdb:types>
+		</gpdb:store>
+	</region>
+	<function-service>
+                <function>
+                        <class-name>io.pivotal.demo.sko.function.RefreshFraudAlertsFromGPDB</class-name>
+                </function>
+    </function-service>
+
+	<gpdb:gpfdist port="8000"  />
+	
+	
+</cache>

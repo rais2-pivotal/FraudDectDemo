@@ -1,0 +1,14 @@
+#GemFire
+
+.classpath
+.project
+.gradle
+.settings
+.springBeans
+.gradle/
+gemfire-greenplum/
+**/server?/
+**/locator*/
+**/.DS_Store
+**/*.class
+

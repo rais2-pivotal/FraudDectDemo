@@ -1,0 +1,10 @@
+---
+applications:
+- name: pos_emulator
+  memory: 512M 
+  instances: 1
+  host: pos_emulator
+  path: build/libs/PoS_Emulator.jar
+  no-route: true
+   
+    
