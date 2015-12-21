@@ -101,10 +101,11 @@ body, html{
 	            			<th style="text-align: left; width: 70%">Location</th>
 	            			<th style="text-align: left; width: 30%">Value</th>
 	            		</tr>
-	            	</thead>	                
+	            	</thead>	            		                
 	            </table>
-	            <div id="scrollable">
-		            <table class="scroll-table">	            	              
+	            
+	            <div id="scrollable" style="width: 100%">
+		            <table class="scroll-table">
 		                <tbody id="possible_fraud">
 		                </tbody>
 		            </table>
@@ -251,19 +252,6 @@ d3.select(self.frameElement).style("height", height + "px");
         	});
         	
 
-    		nodes.forEach(function(node){
-
-        		tbody = d3.select("#possible_fraud");
-		    		
-        		row = tbody.insert("tr",":first-child");
-        		
-        		row.append("td").style({width: "70%"})
-		           	 .text(function(d) {return node.location});
-        		row.append("td").style({width: "30%"})
-        		   	 .text(function(d) {return "US$ "+node.value+".00"});
-    				
-    		});  		
-               			
     		
 
     	});
@@ -293,6 +281,20 @@ d3.select(self.frameElement).style("height", height + "px");
         			
         		});   
 
+        		nodes.forEach(function(node){
+
+            		tbody = d3.select("#possible_fraud");
+    		    		
+            		row = tbody.insert("tr",":first-child").attr("width", "100%");
+            		
+            		row.append("td").style({width: "70%"})
+    		           	 .text(function(d) {return node.location});
+            		row.append("td").style({width: "30%"})
+            		   	 .text(function(d) {return "US$ "+node.value.toFixed(2)});
+        				
+        		});  		
+                   			
+        		
         	 
     		
     	});

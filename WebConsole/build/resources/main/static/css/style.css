@@ -7,8 +7,12 @@ body {
 
 #scroll-table {
 	border: 1px s;
-	
+	border-collapse:collapse; 
+	table-layout:fixed;
+	width:auto
 }
+
+
 
 th, td{
 	border-bottom: 1px solid #ddd;

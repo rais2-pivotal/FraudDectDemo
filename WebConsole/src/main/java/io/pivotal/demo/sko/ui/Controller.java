@@ -26,11 +26,7 @@ public class Controller {
  
     @RequestMapping(value="/getTransactionsMap")
     public @ResponseBody TransactionsMap getDeviceMap(){
-    	/*
-    	 *	MappedTransaction t = new MappedTransaction(200, 5000000, "Barrow County, Georgia", System.currentTimeMillis());
-    	 *	map.addTransaction(t);
-    	 * 
-    	 */
+
     	TransactionsMap latestTransactions = TransactionsMap.latestTransactions;
     	synchronized (latestTransactions) {
 			TransactionsMap map = new TransactionsMap(latestTransactions.getTransactions());
