@@ -4,10 +4,10 @@ applications:
   memory: 512M 
   instances: 1
   host: webconsole
-  path: build/libs/PoS_Emulator.jar
+  path: build/libs/WebConsole.jar
   env:
     locatorHost: 192.168.9.1
-    locatorPost: 10334
+    locatorPort: 10334
     
   
     

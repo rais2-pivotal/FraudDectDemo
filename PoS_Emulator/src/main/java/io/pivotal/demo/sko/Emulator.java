@@ -53,6 +53,7 @@ public class Emulator implements CommandLineRunner {
 			if (setupMode){
 				runSetup();
 			}
+			if (numberOfTransactions<0) numberOfTransactions = Integer.MAX_VALUE;
 			
 			logger.info(">>>>> RUNNING SIMULATION");		
 			logger.info("--------------------------------------");
@@ -70,7 +71,6 @@ public class Emulator implements CommandLineRunner {
 			long mean = 100; // mean value for transactions
 			long variance = 40; // variance
 
-			if (numberOfTransactions<0) numberOfTransactions = Integer.MAX_VALUE;
 			for (int i=0; i<numberOfTransactions; i++){
 				//Map<String,Object> map = (Map)objects.get(i);
 				Transaction t = new Transaction();

@@ -43,12 +43,17 @@ public class GeodeClient {
 
     private GeodeClient() {
  
-    	getCloudEnvProperties();
+    	// not used for micropcf
+    	//getCloudEnvProperties();
     	
-		
+    	
+		if (System.getenv().containsKey("locatorHost") && System.getenv().containsKey("locatorPort")){
+			logger.info("Configuring locator information from system properties");
+			locatorHost = System.getenv("locatorHost");
+			locatorPort = Integer.parseInt(System.getenv("locatorPort"));
+		}
 
 		logger.info(String.format("Geode Locator Information: %s[ %d ]",locatorHost, locatorPort));
-
 
     }
     

@@ -21,18 +21,19 @@
         </region-attributes>
     </region>
     
-    <region name="Transactions">
+    <region name="Transaction">
         <region-attributes refid="PROXY">
-        <!-- 
             <cache-listener>
-                <class-name>io.pivotal.demo.trilateration.CalculateLocationDistanceListener</class-name>
+                <class-name>io.pivotal.demo.sko.TransactionListener</class-name>
             </cache-listener>
-             -->
         </region-attributes>
     </region>
 
     <region name="Suspect">
         <region-attributes refid="PROXY">
+            <cache-listener>
+                <class-name>io.pivotal.demo.sko.SuspectTransactionListener</class-name>
+            </cache-listener>
         </region-attributes>
     </region>
     

@@ -14,18 +14,13 @@ apply plugin: 'eclipse'
 
 repositories {
     mavenCentral()        
-    mavenLocal()
     "https://repository.apache.org/content/repositories/snapshots/"
 }
 
 
 dependencies {
 
-    //compile ("io.pivotal.gemfire:gemfire-greenplum:1.0.0-beta-6-SNAPSHOT")
-    //compile ("io.pivotal.gemfire:gemfire:8.2.0")
-    //compile ("org.apache.logging.log4j:log4j-core:2.4")	
     
-    //compile("org.apache.geode:gemfire-core:1.0.0-incubating-SNAPSHOT")
     compile "com.fasterxml.jackson.core:jackson-databind"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.springframework.boot:spring-boot-starter"
@@ -40,7 +35,6 @@ jar {
     baseName='PoS_Emulator'
     version = version
 }
-
 
 
 bootRepackage.withJarTask = jar

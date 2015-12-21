@@ -1,5 +1,13 @@
-<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
+
+<title>Pivotal Demo</title>
+<meta http-equiv="Cache-Control"
+	content="no-store, no-cache, must-revalidate, max-age=0">
+	<!-- pivotal favicon -->
+	<link rel="shortcut icon" href="img/favicon.ico"/>
+
 <style>
 
 .land {
@@ -14,7 +22,14 @@
 }
 
 .bubble {
-  fill: brown;
+  fill: green;
+  fill-opacity: .5;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+
+.fraud {
+  fill: red;
   fill-opacity: .5;
   stroke: #fff;
   stroke-width: .5px;
@@ -24,25 +39,102 @@
   stroke: #000;
 }
 
-.legend circle {
-  fill: none;
-  stroke: #ccc;
+body, html{
+  margin:0;
+  padding:0;
+  height:80%;
+  width:100%;
 }
 
-.legend text {
-  fill: #777;
-  font: 10px sans-serif;
-  text-anchor: middle;
+.messages{
+ 	float: right;
+    width: 160px;
+    border: 2px solid;
 }
+
+  
 
 </style>
-<body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/headerfooter.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body onLoad="updateData()")>
+
+    <div class="container">
+    	<div class="nav-bar">
+	        <div class="logo">
+				<img src="img/pivotal-logo.png" width="200" height="45" align="top">   	           
+   	        </div>
+	        <br>
+	        <div class="nav" >
+   	            
+	        	Anti-Fraud Real Time Dashboard
+	        <!-- 
+	        	<input type="button" value="Orders US Heat Map" class="activate nav-link" >
+	        	<input type="button" value="Start Data Stream" class="activate nav-link" onclick="startStream();">
+	        	<input type="button" value="Kill App" class="activate nav-link" onclick="killApp();">
+	        	  -->
+	        </div>
+	    </div>
+	</div>
+
+	<div id="maincontent" style="overflow-y: scroll;">
+		<div align="center"> 
+			<div class="banner" >
+				Transactions per PoS / US County
+			</div>
+		</div>
+		
+		<div>
+	  		<div id="map" class="usmap"></div>
+	  		
+	  		<div id="messages" class="messages">
+	            <table>
+	            	<thead id="table_header">
+	            		<tr>
+	            			<th colspan="2" style="text-align: center; width: 100%; font-size: 15px; padding-top: 10px; padding-bottom: 10px">
+	            				Possible Fraudulent Transactions
+	            			</th>
+	            		</tr>
+	            		<tr style="width: 100%">
+	            			<th style="text-align: left; width: 70%">Location</th>
+	            			<th style="text-align: left; width: 30%">Value</th>
+	            		</tr>
+	            	</thead>	                
+	            </table>
+	            <div id="scrollable">
+		            <table class="scroll-table">	            	              
+		                <tbody id="possible_fraud">
+		                </tbody>
+		            </table>
+	             </div>
+			</div>
+		</div>
+	</div>  		
+	
+    <div class="container">
+        <div class="footer">
+          <div class="footer-text">©&nbsp;2015 Pivotal Software, Inc.  </div>
+
+          <div class="footer-poweredby" > 
+	          	<img src="img/p-gemfire.png" width=180 height=54 >
+	          	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+          		<img src="img/p-greenplum.png" width=180 height=54 > 
+          </div>  
+          
+	    </div>
+	</div>  		
+
+
+
+<script src="js/d3.v3.min.js"></script>
+<script src="js/topojson.v1.min.js"></script>
+<script src="js/jquery.min.js"></script>
 <script>
 
-var width = 960,
-    height = 600;
+var width = 920,//960,
+    height = 600; //600;
 
 var formatNumber = d3.format(",.0f");
 
@@ -50,12 +142,14 @@ var path = d3.geo.path()
     .projection(null);
 
 var radius = d3.scale.sqrt()
-    .domain([0, 1e6])
+    .domain([0, 200])
     .range([0, 15]);
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#map").append("svg")
     .attr("width", width)
     .attr("height", height);
+
+
 
 /*
 var legend = svg.append("g")
@@ -74,9 +168,17 @@ legend.append("text")
     .attr("dy", "1.3em")
     .text(d3.format(".1s"));
 */
+
+
+
 d3.json("us.json", function(error, us) {
   if (error) throw error;
 
+ 
+  // create the path
+  //var path = d3.geo.path().projection(projection);
+  
+  
   svg.append("path")
       .datum(topojson.feature(us, us.objects.nation))
       .attr("class", "land")
@@ -90,10 +192,13 @@ d3.json("us.json", function(error, us) {
   svg.append("g")
   		.attr("class", "bubble")
 		.selectAll("circle")
-  		.data(topojson.feature(us, us.objects.counties).features)
+  		.data(topojson.feature(us, us.objects.counties).features, function(d) { return d.properties.name; })
 		.enter().append("circle")
   		.attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
-  		.attr("r", 1.5);  
+  		.attr("r", 1.5)
+  		.attr("class", function(d) { return d.properties.name; }); 
+  
+
   
   /*
   svg.append("g")
@@ -126,21 +231,97 @@ d3.select(self.frameElement).style("height", height + "px");
     	d3.json( "controller/getTransactionsMap", function(data) {
     		var nodes = d3.range(data.transactions.length).map(function(i) { 
     				return {
-    					radius: data.transactions[i].value, 
-    					name: data.transactions[i].location
+    					id: data.transactions[i].id,
+    					name: data.transactions[i].location,
+    					radius: data.transactions[i].value,
+    					value: data.transactions[i].value,
+    					location: data.transactions[i].location,
+    					ts: data.transactions[i].timestamp    					
     				};
-    			});
+    		});
+    		  
+    		nodes.forEach(function(node){
+        		svg.select("#"+node.name.split('. ').join('.').split(' ').join('.'))
+    	 	    .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+			    .transition()
+    			//.duration(2000)
+    			.attr("r", function(d) { return radius(node.radius); })
+        		.transition()
+        		.attr("r", function(d) { return radius(1.5)}); 	
+        	});
+        	
+
+    		nodes.forEach(function(node){
+
+        		tbody = d3.select("#possible_fraud");
+		    		
+        		row = tbody.insert("tr",":first-child");
+        		
+        		row.append("td").style({width: "70%"})
+		           	 .text(function(d) {return node.location});
+        		row.append("td").style({width: "30%"})
+        		   	 .text(function(d) {return "US$ "+node.value+".00"});
+    				
+    		});  		
+               			
+    		
+
+    	});
+
+    		
+
+        d3.json( "controller/getSuspeciousTransactionsMap", function(data) {
+	        		var nodes = d3.range(data.transactions.length).map(function(i) { 
+	        				return {
+	        					name: data.transactions[i].location,
+	        					radius: data.transactions[i].value,
+	        					value: data.transactions[i].value,
+	        					location: data.transactions[i].location,
+	        					ts: data.transactions[i].timestamp
+	        				};
+	        		});
+        		  
+        		nodes.forEach(function(node){
+            		svg.select("#"+node.name.split('. ').join('.').split(' ').join('.'))
+        	 	    .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+    			    .transition()
+        			//.duration(2000)
+        			.attr("r", function(d) { return radius(node.radius); })
+            		.attr("class", "fraud")
+            		.transition()
+            		.attr("r", function(d) { return radius(1.5); });
+        			
+        		});   
+
+        	 
+    		
+    	});
+        
+        $.post("controller/refreshFraudAlertsFromGPDB");        
+    		
+    		
+    		/*
+    		selectedNodes = 
+    			svg.append("g")
+    	    	//.attr("class", "bubble")
+    	  		.selectAll("circle");
+    	  		//.data(nodes, function(d) { d.name; });
     		
     		svg.append("g")
     	    	.attr("class", "bubble")
     	  		.selectAll("circle")
     	  		.data(nodes, function(d) { d.name; })
-    	    	.enter().append("circle")
-    	 	    .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
-    	    	.attr("r", function(d) { return radius(d.radius); });
+    	  		.enter()
+				.append('circle')
+	            .text(function(d){return d;});
+    	    	//.update()
+    	 	    //.attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+			    //.transition()
+    			//.duration(2000)
+    			//.attr("r", function(d) { return radius(d.radius); });
 
     		
-    		
+    		*/
     		/*
     		dataNodes = nodes;
 
@@ -181,12 +362,12 @@ d3.select(self.frameElement).style("height", height + "px");
     	          }
     	        });
     		*/
-    	});
     	
 
         
     	
-        setTimeout(updateData, 1000);
-*/
+        setTimeout(updateData, 500);
+	    
+	};
 
 </script>

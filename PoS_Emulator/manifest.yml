@@ -6,5 +6,7 @@ applications:
   host: pos_emulator
   path: build/libs/PoS_Emulator.jar
   no-route: true
-   
-    
+
+# cf push --no-start   
+# cf set-health-check pos_emulator none
+# cf start pos_emulator    
