@@ -30,8 +30,8 @@ public class Emulator implements CommandLineRunner {
 	    @Value("${delayInMs}")
 		private long delay;
 	    
-	    @Value("${setupMode}")
-	    private boolean setupMode;
+	    @Value("${skipSetup}")
+	    private boolean skipSetup;
 
 	    @Value("${numberOfAccounts}")
 	    private int numberOfAccounts;
@@ -50,7 +50,7 @@ public class Emulator implements CommandLineRunner {
 			
 			loadPoSCounties();
 			
-			if (setupMode){
+			if (!skipSetup && System.getenv("skipSetup")==null){
 				runSetup();
 			}
 			if (numberOfTransactions<0) numberOfTransactions = Integer.MAX_VALUE;
@@ -125,8 +125,6 @@ public class Emulator implements CommandLineRunner {
 				PoSDevice response = restTemplate.postForObject(geodeURL+RegionName.PoS, device, PoSDevice.class);
 			}
 			
-
-
 			
 		}
 }

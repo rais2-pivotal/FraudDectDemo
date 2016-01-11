@@ -8,15 +8,17 @@ public class MappedTransaction implements Serializable{
 	private double value;
 	private long timestamp;
 	private String location;
-	private boolean fraud;
+	private boolean suspect;
+	private String reason;
 	
-	public MappedTransaction(long id, double value, String location, boolean fraud,
+	public MappedTransaction(long id, double value, String location, boolean suspect, String reason,
 			long timestamp) {
 		this.id = id;
 		this.value = value;
 		this.location = location;
 		this.timestamp = timestamp;
-		this.fraud = fraud;
+		this.suspect = suspect;
+		this.reason = reason;
 	}
 	public long getId() {
 		return id;
@@ -42,11 +44,17 @@ public class MappedTransaction implements Serializable{
 	public void setLocation(String location) {
 		this.location = location;
 	}
-	public boolean isFraud() {
-		return fraud;
+	public boolean isSuspect() {
+		return suspect;
 	}
-	public void setFraud(boolean fraud) {
-		this.fraud = fraud;
+	public void setSuspect(boolean suspect) {
+		this.suspect = suspect;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String suspectReason) {
+		this.reason = suspectReason;
 	}
 	
 	

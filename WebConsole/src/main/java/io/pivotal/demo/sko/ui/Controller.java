@@ -40,7 +40,7 @@ public class Controller {
     
     @RequestMapping(value="/getSuspeciousTransactionsMap")
     public @ResponseBody TransactionsMap getSuspeciousMap(){
-    	TransactionsMap suspeciousTransactions = TransactionsMap.suspeciousTransactions;
+    	TransactionsMap suspeciousTransactions = TransactionsMap.suspiciousTransactions;
     	synchronized (suspeciousTransactions) {
 			TransactionsMap map = new TransactionsMap(suspeciousTransactions.getTransactions());
 			suspeciousTransactions.clearAll();

@@ -9,7 +9,7 @@ import java.util.List;
 public class TransactionsMap implements Serializable{
 
 	public static TransactionsMap latestTransactions = new TransactionsMap();
-	public static TransactionsMap suspeciousTransactions= new TransactionsMap();
+	public static TransactionsMap suspiciousTransactions= new TransactionsMap();
 		
 	
 	private List<MappedTransaction> transactions = new ArrayList<MappedTransaction>();
@@ -25,8 +25,8 @@ public class TransactionsMap implements Serializable{
 	}
 
 	
-	public void addTransaction(long id, double value, String location, boolean fraud, long timestamp){
-		transactions.add(new MappedTransaction(id, value, location, fraud, timestamp));
+	public void addTransaction(long id, double value, String location, boolean suspect, String suspectReason, long timestamp){
+		transactions.add(new MappedTransaction(id, value, location, suspect, suspectReason,timestamp));
 	}
 	
 	public void clearAll(){
@@ -37,6 +37,11 @@ public class TransactionsMap implements Serializable{
 	public void addTransaction(MappedTransaction t) {
 		transactions.add(t);
 		
+	}
+
+	public void addTransaction(long transactionId, double value,
+			String location, long timestamp) {
+		addTransaction(transactionId, value, location, false, null, timestamp);		
 	}
 	
 	

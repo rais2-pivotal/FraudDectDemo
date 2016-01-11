@@ -32,7 +32,7 @@ jar {
     version = version
 }
 
-task clientJar(type: Jar, dependsOn: jar){
+task serverJar(type: Jar, dependsOn: jar){
     baseName = 'server'
     from sourceSets.main.output.classesDir
     include 'io/pivotal/demo/sko/**/*.*'
@@ -42,7 +42,7 @@ bootRepackage.withJarTask = jar
 
 
 artifacts{
-    archives jar, clientJar
+    archives jar, serverJar
 }   
 
 task wrapper(type: Wrapper) {

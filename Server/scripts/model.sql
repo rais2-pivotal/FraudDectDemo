@@ -20,28 +20,29 @@ drop table if exists SUSPECT;
 create table SUSPECT (		
 	transaction_id bigint primary key,
 	device_id	 bigint,	
-	marked_suspect_ts_millis	 bigint
+	marked_suspect_ts_millis	 bigint,
+	reason text
 ) distributed by (transaction_id);
+
+
+
+
+
+
+
+
+
+
+
 
 -- simulate some fake suspect markings
 
 truncate table SUSPECT;
 
-INSERT INTO SUSPECT (transaction_id, device_id, marked_suspect_ts_millis) values 
-	(7044035274418018129, 969, 7933570586185119399);
+INSERT INTO SUSPECT (transaction_id, device_id, marked_suspect_ts_millis, text) values 
+	(7044035274418018129, 969, 7933570586185119399,"test");
 
-INSERT INTO SUSPECT (transaction_id, device_id, marked_suspect_ts_millis) values 
-	(8483356159858564856, 1566, 7933570586185119399);
-
-	INSERT INTO SUSPECT (transaction_id, device_id, marked_suspect_ts_millis) values 
-	(4612853997241945034, 245, 7933570586185119399);
-
-	INSERT INTO SUSPECT (transaction_id, device_id, marked_suspect_ts_millis) values 
-	(6127530740717522181, 1441, 7933570586185119399);
-
-	INSERT INTO SUSPECT (transaction_id, device_id, marked_suspect_ts_millis) values 
-	(5073249464168962194, 95, 7933570586185119399);
-
+--
 -- create a view containing the columns / rows for training the model
 
 drop view TRANSACTION_SUSPECT_VIEW;

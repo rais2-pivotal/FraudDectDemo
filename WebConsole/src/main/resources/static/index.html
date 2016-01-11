@@ -70,11 +70,7 @@ body, html{
 	        <div class="nav" >
    	            
 	        	Anti-Fraud Real Time Dashboard
-	        <!-- 
-	        	<input type="button" value="Orders US Heat Map" class="activate nav-link" >
-	        	<input type="button" value="Start Data Stream" class="activate nav-link" onclick="startStream();">
-	        	<input type="button" value="Kill App" class="activate nav-link" onclick="killApp();">
-	        	  -->
+
 	        </div>
 	    </div>
 	</div>
@@ -91,21 +87,22 @@ body, html{
 	  		
 	  		<div id="messages" class="messages">
 	            <table>
-	            	<thead id="table_header">
-	            		<tr>
-	            			<th colspan="2" style="text-align: center; width: 100%; font-size: 15px; padding-top: 10px; padding-bottom: 10px">
-	            				Possible Fraudulent Transactions
-	            			</th>
-	            		</tr>
-	            		<tr style="width: 100%">
-	            			<th style="text-align: left; width: 70%">Location</th>
-	            			<th style="text-align: left; width: 30%">Value</th>
-	            		</tr>
-	            	</thead>	            		                
 	            </table>
 	            
 	            <div id="scrollable" style="width: 100%">
 		            <table class="scroll-table">
+	            	<thead id="table_header">
+	            		<tr>
+	            			<th colspan="3" style="text-align: center; width: 100%; font-size: 15px; padding-top: 10px; padding-bottom: 10px">
+	            				Suspect Transactions
+	            			</th>
+	            		</tr>
+	            		<tr style="width: 100%">
+	            			<th style="text-align: left; width: 50%">Location</th>
+	            			<th style="text-align: left; width: 30%">Value</th>
+	            			<th style="text-align: left; width: 20%">Reason</th>
+	            		</tr>
+	            	</thead>	            		                
 		                <tbody id="possible_fraud">
 		                </tbody>
 		            </table>
@@ -265,7 +262,8 @@ d3.select(self.frameElement).style("height", height + "px");
 	        					radius: data.transactions[i].value,
 	        					value: data.transactions[i].value,
 	        					location: data.transactions[i].location,
-	        					ts: data.transactions[i].timestamp
+	        					ts: data.transactions[i].timestamp,
+	        					reason: data.transactions[i].reason
 	        				};
 	        		});
         		  
@@ -273,10 +271,10 @@ d3.select(self.frameElement).style("height", height + "px");
             		svg.select("#"+node.name.split('. ').join('.').split(' ').join('.'))
         	 	    .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
     			    .transition()
-        			//.duration(2000)
-        			.attr("r", function(d) { return radius(node.radius); })
+        			.attr("r", function(d) { return radius(node.radius*3); })
             		.attr("class", "fraud")
             		.transition()
+        			.duration(2000)  // find out how to make it blink
             		.attr("r", function(d) { return radius(1.5); });
         			
         		});   
@@ -287,10 +285,12 @@ d3.select(self.frameElement).style("height", height + "px");
     		    		
             		row = tbody.insert("tr",":first-child").attr("width", "100%");
             		
-            		row.append("td").style({width: "70%"})
-    		           	 .text(function(d) {return node.location});
-            		row.append("td").style({width: "30%"})
-            		   	 .text(function(d) {return "US$ "+node.value.toFixed(2)});
+            		row.append("td").style({width: "50%"})
+    		           	 .text(function(d) {return node.location.substring(0,26)});
+            		row.append("td").style({width: "25%"})
+		       		   	 .text(function(d) {return "$ "+node.value.toFixed(2)});
+            		row.append("td").style({width: "25%"})
+       				   	 .text(function(d) {return node.reason});
         				
         		});  		
                    			

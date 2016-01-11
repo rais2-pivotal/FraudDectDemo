@@ -1,8 +1,5 @@
-package io.pivotal.demo.sko.entity;
+package io.pivotal.demo.sko;
 
-import org.springframework.context.annotation.ComponentScan;
-
-@ComponentScan
 public class Suspect {
 
 	private long transactionId;
@@ -11,6 +8,18 @@ public class Suspect {
 	private String reason;
 
 	
+	public Suspect(){		
+	}
+	
+	public Suspect(long transactionId, long deviceId, long markedSuspectMillis,
+			String reason) {
+		super();
+		this.transactionId = transactionId;
+		this.deviceId = deviceId;
+		this.markedSuspectMillis = markedSuspectMillis;
+		this.reason = reason;
+	}
+
 	public String getReason() {
 		return reason;
 	}

@@ -9,7 +9,7 @@
 		<pdx-serializer>
 			<class-name>com.gemstone.gemfire.pdx.ReflectionBasedAutoSerializer</class-name>
 			<parameter name="classes">
-				<string>io.pivotal.gemfire.sko.entity.*</string>
+				<string>io.pivotal.demo.sko.*</string>
 			</parameter>
 		</pdx-serializer>
 	</pdx>
@@ -40,6 +40,7 @@
 	</region>
 	<region name="Transaction">
 		<region-attributes refid="PARTITION">
+		
 			<partition-attributes redundant-copies="1"
 				colocated-with="PoS">
 				<partition-resolver>
@@ -49,6 +50,11 @@
 					</parameter>
 				</partition-resolver>
 			</partition-attributes>
+			
+            <cache-writer>
+            	<class-name>io.pivotal.demo.sko.CheckTransactionLimitCacheWriter</class-name>
+            </cache-writer>
+			
 		</region-attributes>
 		<gpdb:store datasource="datasource">
 			<gpdb:synchronize mode="automatic" time-interval="3000" persistent="false" />		
@@ -93,6 +99,8 @@
 						<gpdb:field name="transactionId" column="transaction_id" />
 						<gpdb:field name="deviceId" column="device_id" />
 						<gpdb:field name="markedSuspectMillis" column="marked_suspect_ts_millis" />
+						<gpdb:field name="reason" column="reason" />
+						
 					</gpdb:fields>
 				</gpdb:pdx>
 			</gpdb:types>
@@ -102,6 +110,9 @@
                 <function>
                         <class-name>io.pivotal.demo.sko.function.RefreshFraudAlertsFromGPDB</class-name>
                 </function>
+                <function>
+                        <class-name>io.pivotal.demo.sko.function.InsertRandomFraudsOnGPDB</class-name>
+                </function>                
     </function-service>
 
 	<gpdb:gpfdist port="8000"  />

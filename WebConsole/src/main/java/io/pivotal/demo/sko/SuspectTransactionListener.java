@@ -3,6 +3,7 @@ import io.pivotal.demo.sko.util.GeodeClient;
 import io.pivotal.demo.sko.util.TransactionsMap;
 
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import com.gemstone.gemfire.cache.Declarable;
 import com.gemstone.gemfire.cache.EntryEvent;
@@ -36,25 +37,24 @@ public class SuspectTransactionListener extends CacheListenerAdapter
 		long deviceId;
 		double value;
 		long timestamp;
-		boolean fraud;
+		String reason;
 		
 		if (obj instanceof PdxInstance){			
 			transactionId = ((Number)((PdxInstance)obj).getField("transactionId")).longValue();
+			reason = (String)((PdxInstance)obj).getField("reason");
 			
 			try{
 				PdxInstance transaction = GeodeClient.getInstance().getTransaction(transactionId);
 				deviceId = ((Number)transaction.getField("deviceId")).longValue();
 				value = ((Number)transaction.getField("value")).doubleValue();			
 				timestamp = ((Number)transaction.getField("timestamp")).longValue();
-				fraud = true;			
 				String location = GeodeClient.getInstance().getPoSLocation(deviceId);
 				
-				TransactionsMap.suspeciousTransactions.addTransaction(transactionId, value, location, fraud, timestamp);
+				TransactionsMap.suspiciousTransactions.addTransaction(transactionId, value, location, true, reason, timestamp);
 			}
 			catch(IllegalArgumentException ie){
-				// transaction id couldn't be found in Gem
-				ie.printStackTrace();
-				// ignore.
+				Logger.getAnonymousLogger().warning("An invalid suspect transaction was found in GPDB. Please clean-up old data.");				
+				Logger.getAnonymousLogger().warning(ie.getMessage());				
 			}
 			
 			

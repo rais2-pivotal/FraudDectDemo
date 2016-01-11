@@ -39,7 +39,6 @@ public class TransactionListener extends CacheListenerAdapter
 		long deviceId;
 		double value;
 		long timestamp;
-		boolean fraud = false;
 		if (obj instanceof PdxInstance){		
 			
 			transactionId = ((Number)((PdxInstance)obj).getField("id")).longValue();
@@ -49,7 +48,7 @@ public class TransactionListener extends CacheListenerAdapter
 			
 			String location = GeodeClient.getInstance().getPoSLocation(deviceId);
 			
-			TransactionsMap.latestTransactions.addTransaction(transactionId, value, location, fraud, timestamp);
+			TransactionsMap.latestTransactions.addTransaction(transactionId, value, location, timestamp);
 			
 		}
 		else throw new RuntimeException("new object is not PDX Instance.. it came as "+obj.getClass());
