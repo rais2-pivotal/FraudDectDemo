@@ -25,43 +25,81 @@ create table SUSPECT (
 ) distributed by (transaction_id);
 
 
+CREATE TABLE zip_codes 
+	(ZIP char(5), LATITUDE double precision, LONGITUDE double precision, 
+	CITY varchar, STATE char(2), COUNTY varchar);
+
+
+---
 
 
 
+create or replace function average_value_percentage(accountId bigint, value decimal)
+  returns DECIMAL AS '
+	  select ($2-avg(transaction_value))/avg(transaction_value) as average_value_percentage 
+	  	from TRANSACTION where account_id=$1 ' 
+  
+ language sql STABLE;
+
+-- need to copy the zip_codes_states.csv files to GPDB master node before loading
+	
+COPY zip_codes FROM '/home/gpadmin/zip_codes_states.csv' DELIMITER ',' CSV HEADER;
+
+create or replace function distance_in_meters(county1 text, county2 text)
+  returns Integer AS '
+ 	SELECT
+ 	ROUND(AVG(
+ 		ACOS( 
+ 		SIN( radians(z1.latitude) ) * SIN( radians(z2.latitude) ) + 
+		COS( radians(z1.latitude) )*COS( radians(z2.latitude) )*COS( radians(z2.longitude) - radians(z1.longitude) ) 
+ 		) * 6371000
+ 	)) :: integer
+ 	from zip_codes z1, zip_codes z2
+ 	where z1.county = $1 and z2.county = $2
+  '
+ language sql STABLE;
+
+ 
+create or replace view home_location(accountId bigint)
+  AS '
+	  	
+	select p.location 
+		FROM POS_DEVICE p JOIN TRANSACTION t ON (p.id=t.device_id)
+		WHERE t.account_id=$1
+		GROUP BY p.location 
+		ORDER BY count(p.location) desc LIMIT 1
+ ' 
+  
+ language sql STABLE;
 
 
-
-
-
-
-
--- simulate some fake suspect markings
-
-truncate table SUSPECT;
-
-INSERT INTO SUSPECT (transaction_id, device_id, marked_suspect_ts_millis, text) values 
-	(7044035274418018129, 969, 7933570586185119399,"test");
-
---
--- create a view containing the columns / rows for training the model
-
-drop view TRANSACTION_SUSPECT_VIEW;
-
+ create or replace function had_recent_fraud(deviceid bigint)
+  returns INTEGER AS '
+	  	
+	select count(t.id) 
+		FROM 
+			TRANSACTION t JOIN SUSPECT s 			
+			ON (t.id=s.transaction_id)
+		WHERE t.device_id=$1
+ '   
+ language sql STABLE;
+ 
+ 
+ 
 create or replace view TRANSACTION_SUSPECT_VIEW as
 	   select 
-			t.id, 
-			t.device_id, 
-			t.transaction_value, 
-			t.account_id, 
-			to_timestamp(t.ts_millis / 1000) as ts,  -- timestamp
-			date_part('hour', to_timestamp(t.ts_millis / 1000)) as hour, -- hour  
+	        average_value_percentage(t.account_id) as average_value_percentage,	   		
+	   		distance_in_meters(
+	   				split_part(p.location, ',', 1), split_part(home_location(t.account_id), ',', 1)
+	   			) as distance_from_home_pos,
+	   		had_recent_fraud(t.device_id) as had_recent_fraud,
 			(s.marked_suspect_ts_millis IS NOT NULL)::int as possible_fraud
 		from 
-			TRANSACTION t LEFT OUTER JOIN SUSPECT s 			
-			ON (t.id=s.transaction_id);
+			TRANSACTION t LEFT OUTER JOIN SUSPECT s JOIN POS_DEVICE p			
+			ON (t.id=s.transaction_id) AND (s.device_id=p.id);
 
-	
-select * from TRANSACTION_SUSPECT_VIEW	
+
+
 	
 SELECT madlib.linregr_train( 'TRANSACTION_SUSPECT_VIEW',
                              'TRANSACTION_SUSPECT_linregr',

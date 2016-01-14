@@ -39,7 +39,7 @@
 		</gpdb:store>
 	</region>
 	<region name="Transaction">
-		<region-attributes refid="PARTITION">
+		<region-attributes refid="PARTITION_HEAP_LRU">
 		
 			<partition-attributes redundant-copies="1"
 				colocated-with="PoS">
@@ -76,7 +76,7 @@
 		</gpdb:store>
 	</region>
 	<region name="Suspect">
-		<region-attributes refid="PARTITION">
+		<region-attributes refid="PARTITION_HEAP_LRU">
 			<partition-attributes redundant-copies="1"
 				colocated-with="Transaction">
 				<partition-resolver>
