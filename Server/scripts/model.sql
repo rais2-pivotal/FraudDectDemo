@@ -1,7 +1,20 @@
-
+--
+-- $ psql 
+-- gpadmin=# CREATE USER pivotal WITH SUPERUSER LOGIN;
+-- CREATE ROLE
+-- gpadmin=# ALTER ROLE pivotal WITH PASSWORD 'pivotal';
+-- ALTER ROLE
+-- gpadmin=# CREATE DATABASE gemfire;
+-- CREATE DATABASE
+-- gpadmin=# GRANT ALL ON DATABASE gemfire TO pivotal;
+-- GRANT
+-- \q
+--
+--
+--
 drop table if exists POS_DEVICE;
 create table POS_DEVICE (	
-	id	bigint primary key,
+	id	bigint ,
 	location text,
 	merchant_name	text
 ) distributed by (id);		
@@ -18,7 +31,7 @@ create table TRANSACTION (
 
 drop table if exists SUSPECT;
 create table SUSPECT (		
-	transaction_id bigint primary key,
+	transaction_id bigint,
 	device_id	 bigint,	
 	marked_suspect_ts_millis	 bigint,
 	reason text
