@@ -8,6 +8,8 @@ applications:
   env:
     locatorHost: 192.168.9.1
     locatorPort: 10334
+  services:
+    - gemfire
     
   
     

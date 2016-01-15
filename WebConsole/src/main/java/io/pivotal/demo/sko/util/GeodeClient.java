@@ -43,16 +43,11 @@ public class GeodeClient {
 
     private GeodeClient() {
  
-    	// not used for micropcf
-    	//getCloudEnvProperties();
-    	
-    	
-		if (System.getenv().containsKey("locatorHost") && System.getenv().containsKey("locatorPort")){
-			logger.info("Configuring locator information from system properties");
-			locatorHost = System.getenv("locatorHost");
-			locatorPort = Integer.parseInt(System.getenv("locatorPort"));
-		}
-
+    	if (System.getenv("VCAP_SERVICES")!=null){
+			logger.info("Configuring locator information from service binding");
+    		getCloudEnvProperties();    	
+    	}
+    
 		logger.info(String.format("Geode Locator Information: %s[ %d ]",locatorHost, locatorPort));
 
     }
@@ -65,16 +60,12 @@ public class GeodeClient {
     	if (vcapServices==null || vcapServices.isEmpty()) return;
     	    	
 		Object parsed = JSON.parse(vcapServices);
-		Object[] gemServices = (Object[]) ((Map)parsed).get("p-gemfire");
-		Map credentials=(Map)((Map)gemServices[0]).get("credentials");
-		String locator = ((Object[])credentials.get("locators"))[0].toString();
-		String user = credentials.get("username").toString();
-		String pass = credentials.get("password").toString();
-    	
-		locatorHost = locator.substring(0, locator.indexOf("["));
-		locatorPort = Integer.parseInt(locator.substring(locator.indexOf("[")+1, locator.indexOf("]")));
-		this.username = user;
-		this.password = pass;
+		logger.info("VCAP= "+parsed.toString());
+		Object[] userProvided = (Object[])((Map)parsed).get("user-provided");
+		Object gemService = userProvided[0];
+		Map credentials=(Map)((Map)gemService).get("credentials");
+		locatorHost = credentials.get("locatorHost").toString();
+		locatorPort = Integer.parseInt(credentials.get("locatorPort").toString());
     }
     
     
