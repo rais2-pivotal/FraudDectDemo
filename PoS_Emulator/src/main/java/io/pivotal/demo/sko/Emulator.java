@@ -9,11 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.PrimitiveIterator.OfLong;
 import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.mortbay.util.ajax.JSON;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.ComponentScan;
@@ -45,6 +47,20 @@ public class Emulator implements CommandLineRunner {
 		
 		Logger logger = Logger.getLogger(Emulator.class.getName());
 
+	    private void getCloudEnvProperties(){
+	    	String vcapServices = System.getenv("VCAP_SERVICES");
+	    	if (vcapServices==null || vcapServices.isEmpty()) return;
+	    	    	
+			Object parsed = JSON.parse(vcapServices);
+			logger.info("VCAP= "+parsed.toString());
+			Object[] userProvided = (Object[])((Map)parsed).get("user-provided");
+			Object gemService = userProvided[0];
+			Map credentials=(Map)((Map)gemService).get("credentials");			
+			geodeURL = credentials.get("RestAPI").toString();
+			
+	    }
+		
+		
 		@Override
 		public void run(String... args) throws Exception {
 			
