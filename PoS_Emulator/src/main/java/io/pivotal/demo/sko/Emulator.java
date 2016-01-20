@@ -111,8 +111,16 @@ public class Emulator implements CommandLineRunner {
 				
 				t.setTimestamp(System.currentTimeMillis());
 				t.setValue(Math.abs(mean+random.nextGaussian()*variance));
+				
+				try{
+					Transaction response = restTemplate.postForObject(geodeURL+RegionName.Transaction, t, Transaction.class);
+				}
+				catch(Exception e){
+					logger.warning("Failed to connect to Geode using URL "+geodeURL+RegionName.Transaction);
+					e.printStackTrace();
+				}
 				Thread.sleep(delay);
-				Transaction response = restTemplate.postForObject(geodeURL+RegionName.Transaction, t, Transaction.class);
+				
 
 			}
 
