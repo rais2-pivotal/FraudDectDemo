@@ -24,7 +24,7 @@
 			<partition-attributes redundant-copies="1" />
 		</region-attributes>
 		<gpdb:store datasource="datasource">
-			<gpdb:synchronize mode="automatic" time-interval="3000" persistent="false" />
+			<gpdb:synchronize mode="automatic" time-interval="60000" persistent="false" />
 			<gpdb:types>
 				<gpdb:pdx name="io.pivotal.sko.demo.entity.PoSDevice"
 					table="POS_DEVICE">
@@ -57,7 +57,7 @@
 			
 		</region-attributes>
 		<gpdb:store datasource="datasource">
-			<gpdb:synchronize mode="automatic" time-interval="3000" persistent="false" />		
+			<gpdb:synchronize mode="automatic" time-interval="60000" persistent="false" />		
 			<gpdb:types>
 				<gpdb:pdx name="io.pivotal.gemfire.sko.entity.Transaction"
 					table="TRANSACTION">
@@ -88,7 +88,7 @@
 			</partition-attributes>
 		</region-attributes>
 		<gpdb:store datasource="datasource">
-			<gpdb:synchronize mode="automatic" time-interval="3000" persistent="false" />		
+			<gpdb:synchronize mode="automatic" time-interval="60000" persistent="false" />		
 			<gpdb:types>
 				<gpdb:pdx name="io.pivotal.gemfire.sko.entity.Suspect" 
 					table="SUSPECT">
