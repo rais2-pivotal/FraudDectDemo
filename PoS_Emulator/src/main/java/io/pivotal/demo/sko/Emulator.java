@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.PrimitiveIterator.OfLong;
 import java.util.Random;
@@ -42,11 +43,14 @@ public class Emulator implements CommandLineRunner {
 	    private int numberOfTransactions;
 	    
 	    private ArrayList<String> counties;
+
+		private Map<Long,Long> accountToDeviceMap = new HashMap<Long,Long>();
 	   
 	    private RestTemplate restTemplate = new RestTemplate();
 		
 		Logger logger = Logger.getLogger(Emulator.class.getName());
-
+		
+		
 	    private void getCloudEnvProperties(){
 	    	String vcapServices = System.getenv("VCAP_SERVICES");
 	    	if (vcapServices==null || vcapServices.isEmpty()) return;
@@ -64,6 +68,7 @@ public class Emulator implements CommandLineRunner {
 		@Override
 		public void run(String... args) throws Exception {
 			
+			getCloudEnvProperties();
 			loadPoSCounties();
 			
 			if (!skipSetup && System.getenv("skipSetup")==null){
@@ -91,8 +96,19 @@ public class Emulator implements CommandLineRunner {
 				//Map<String,Object> map = (Map)objects.get(i);
 				Transaction t = new Transaction();
 				t.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
-				t.setDeviceId(deviceIDs.next());
-				t.setAccountId(accountIDs.next());		
+				long accountId = accountIDs.next();
+				t.setAccountId(accountId);		
+				
+				// 90% of times, we'll transact this account from a single "home location"
+				if (Math.random()<0.9){
+					t.setDeviceId(getHomePoS(accountId));
+				}
+				else {
+					t.setDeviceId(deviceIDs.next());
+				}
+				
+				
+				
 				t.setTimestamp(System.currentTimeMillis());
 				t.setValue(Math.abs(mean+random.nextGaussian()*variance));
 				Thread.sleep(delay);
@@ -104,6 +120,20 @@ public class Emulator implements CommandLineRunner {
 			
 			
 		}
+		
+		private Long getHomePoS(Long accountId){
+			
+			// Randomly pick a deviceId, in case there's not already one mapped to that account
+			
+			if (accountToDeviceMap.get(accountId)==null){
+				Long deviceId = (long)new Random().nextInt(counties.size());
+				accountToDeviceMap.put(accountId, deviceId);
+			}			
+			return accountToDeviceMap.get(accountId);
+			
+			
+		}
+		
 
 		/*
 		 * Load the counties data from file
