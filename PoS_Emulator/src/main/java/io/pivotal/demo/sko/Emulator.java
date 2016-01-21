@@ -134,7 +134,7 @@ public class Emulator implements CommandLineRunner {
 			// Randomly pick a deviceId, in case there's not already one mapped to that account
 			
 			if (accountToDeviceMap.get(accountId)==null){
-				Long deviceId = (long)new Random().nextInt(counties.size());
+				Long deviceId = accountId % counties.size();
 				accountToDeviceMap.put(accountId, deviceId);
 			}			
 			return accountToDeviceMap.get(accountId);
