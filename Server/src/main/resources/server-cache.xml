@@ -110,6 +110,9 @@
                 <function>
                         <class-name>io.pivotal.demo.sko.function.RefreshFraudAlertsFromGPDB</class-name>
                 </function>
+                <function>
+                        <class-name>io.pivotal.demo.sko.function.ShareAll</class-name>
+                </function>
     </function-service>
 
 	<gpdb:gpfdist port="8000"  />
