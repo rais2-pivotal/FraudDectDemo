@@ -71,7 +71,7 @@ public class Emulator implements CommandLineRunner {
 			getCloudEnvProperties();
 			loadPoSCounties();
 			
-			if (!skipSetup && System.getenv("skipSetup")==null){
+			if (!skipSetup){
 				runSetup();
 			}
 			if (numberOfTransactions<0) numberOfTransactions = Integer.MAX_VALUE;

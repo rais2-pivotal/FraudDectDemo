@@ -8,8 +8,8 @@ applications:
   no-route: true
   services:
     - gemfire
-#  env:
-#    skipSetup: true
+  env:
+    skipSetup: true
 
 # cf push --no-start   
 # cf set-health-check pos_emulator none
