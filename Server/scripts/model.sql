@@ -78,10 +78,15 @@ where t.account_id = h.account_id and t.device_id = d.id and t.account_id = a.ac
 
 
 
+::::::::::::::
+Add some suspect rows
+::::::::::::::
+insert into suspect (select id,device_id,ts_millis,'Manually Marked',1 from transaction_info where distancekm>200 and percentage>.75 or mph > 200);
 
-#insert into suspect (select id,device_id,ts_millis,'Manually Marked',1 from transaction_info where distancekm>200 and percentage>.75 or mph > 200);
 
-
+::::::::::::::
+Train Model
+::::::::::::::
 
 drop table suspect_logregr cascade;
 drop table suspect_logregr_summary cascade;
@@ -95,35 +100,32 @@ SELECT madlib.logregr_train(
     'irls'                                     -- optimizer
     );
     
-    
-    
-drop view fraud_view;
-create view fraud_view as (
-SELECT s.id,s.device_id,s.ts_millis,'ML Prediction' as reason,s.transaction_value,s.distancekm,s.percentage,s.account_id, s.mph,madlib.logregr_predict(coef, ARRAY[1, distancekm, percentage,mph]) as fraud,
-       s.marked,madlib.logregr_predict_prob(coef, ARRAY[1, distancekm, percentage,mph]) as prob
-FROM transaction_info s, suspect_logregr l
-ORDER BY marked desc, fraud desc);
-insert into suspect  (select id,device.ts_millis,reason from fraud_view where fraud='t');
+ 
+ 
+Place these in gpadmin home directory
 
+::::::::::::::
+predict.sql
+::::::::::::::
+drop view if exists fraud_view;
+create view fraud_view as ( SELECT s.id,s.device_id,s.transaction_value,s.ts_millis,'ML Prediction' as reason,s.distancekm,s.percentage,s.account_id, ma
+dlib.logregr_predict(coef, ARRAY[1, distancekm, percentage,mph]) as fraud,s.marked,madlib.logregr_predict_prob(coef, ARRAY[1, distancekm, percentage,mph
+]) as prob FROM transaction_info s, suspect_logregr l ORDER BY marked desc, fraud desc);
 
-	transaction_id bigint,
-	device_id	 bigint,	
-	marked_suspect_ts_millis	 bigint,
-	reason text,
-	marked int    
-    
-    
+insert into suspect  (select id,device_id,ts_millis,reason from fraud_view where fraud='t' limit 20);
 
+::::::::::::::
+prediction.sh
+::::::::::::::
+#!/bin/bash
+echo "BEGINNING PREDICTION" >> /home/gpadmin/predict.log
+/usr/local/greenplum-db/bin/psql -d gemfire -f /home/gpadmin/predict.sql -a -L /home/gpadmin/query.out
+echo "COMPLETED PREDICTION" >> /home/gpadmin/predict.log
 
-drop view fraud_view;
-create view fraud_view as (
-SELECT s.id,s.device_id,s.transaction_value,s.ts_millis,'ML Prediction' as reason,s.distancekm,s.percentage,s.account_id, madlib.logregr_predict(coef, ARRAY[1, distancekm, percentage,mph]) as fraud,
-       s.marked,madlib.logregr_predict_prob(coef, ARRAY[1, distancekm, percentage,mph]) as prob
-FROM transaction_info s, suspect_logregr l
-ORDER BY marked desc, fraud desc);
+::::::::::::::
+Then add the cron job to the crontab to run every 2 minutes
+::::::::::::::
 
-insert into suspect  (select id,device_id,ts_millis,reason from fraud_view where fraud='t');
-
-
+*/2 *  *  *  * gpadmin  . /home/gpadmin/.bashrc;/home/gpadmin/prediction.sh
 
 
