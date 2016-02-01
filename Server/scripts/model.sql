@@ -32,7 +32,7 @@ create table TRANSACTION (
 
 CREATE TABLE zip_codes 
 	(ZIP char(5), LATITUDE double precision, LONGITUDE double precision, 
-	CITY varchar, STATE char(2), COUNTY varchar);
+	CITY varchar, STATE char(2), COUNTY varchar, NAME varchar);
 	
 COPY zip_codes FROM ‘/tmp/zip_codes_states.csv' DELIMITER ',' CSV HEADER;
 
@@ -67,14 +67,12 @@ home_latlong as (select h.account_id as account_id, p.latitude as latitude, p.lo
 avg_txn_value as (select account_id, avg(transaction_value) as avg_value from transaction group by account_id),
 elapsed_time as (select id,coalesce((ts_millis)-lag(ts_millis) over (PARTITION BY account_id ORDER BY ts_millis asc) ,1) as elapsed_ms from transaction order by account_id,ts_millis desc),
 prev_txn as (select t.id,lag(t.id) over (PARTITION BY account_id ORDER BY ts_millis asc) as prev_id, lag(p.longitude) over (PARTITION BY account_id ORDER BY ts_millis asc) as prev_longitude,lag(p.latitude) over (PARTITION BY account_id ORDER BY ts_millis asc) as prev_latitude from transaction t, pos_data p where p.id = t.device_id order by account_id,ts_millis desc)
-
 select t.*,coalesce(s.marked,0) as marked,st_distance_sphere(st_point(h.longitude,h.latitude),st_point(d.longitude,d.latitude))/1000 as DistanceKM,
 (t.transaction_value-a.avg_value)/a.avg_value as percentage,a.avg_value,et.elapsed_ms,coalesce(pr.prev_id,t.id) as prev_id,coalesce(st_distance_sphere(st_point(d.longitude,d.latitude),st_point(pr.prev_longitude,pr.prev_latitude))/1000,0) as txn_distance
-, coalesce(st_distance_sphere(st_point(d.longitude,d.latitude),st_point(pr.prev_longitude,pr.prev_latitude))/1000 *.621371,0 ) / (et.elapsed_ms::float /1000/60/60) as mph
-
-
+, coalesce(st_distance_sphere(st_point(d.longitude,d.latitude),st_point(pr.prev_longitude,pr.prev_latitude))/1000 *.621371,0 ) ,(et.elapsed_ms::float /1000/60/60) as mph
 from TRANSACTION t left join elapsed_time et on t.id=et.id , home_latlong h, device_data d, avg_txn_value a,suspect_view s,prev_txn pr
-where t.account_id = h.account_id and t.device_id = d.id and t.account_id = a.account_id and h.account_id = a.account_id and t.account_id = a.account_id and t.id = s.id and pr.id = t.id order by t.id;
+where t.account_id = h.account_id and t.device_id = d.id and t.account_id = a.account_id and h.account_id = a.account_id and t.account_id = a.account_id and t.id = s.id and pr.id = t.id and et.elapsed_ms>0 order by t.id;
+
 
 
 
