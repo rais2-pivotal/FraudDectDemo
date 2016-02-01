@@ -12,7 +12,7 @@
 --
 --
 --
-drop table if exists POS_DEVICE;
+drop table if exists POS_DEVICE cascade;
 create table POS_DEVICE (	
 	id	bigint ,
 	location text,
@@ -20,7 +20,7 @@ create table POS_DEVICE (
 ) distributed by (id);		
  
 
-drop table if exists TRANSACTION;
+drop table if exists TRANSACTION cascade;
 create table TRANSACTION (		
 	id bigint,
 	device_id	 bigint,
@@ -30,11 +30,12 @@ create table TRANSACTION (
 ) distributed by (id);
 
 
-CREATE TABLE zip_codes 
+drop table if exists ZIP_CODES cascade;
+CREATE TABLE ZIP_CODES 
 	(ZIP char(5), LATITUDE double precision, LONGITUDE double precision, 
 	CITY varchar, STATE char(2), COUNTY varchar);
 	
-COPY zip_codes FROM ‘/tmp/zip_codes_states.csv' DELIMITER ',' CSV HEADER;
+COPY zip_codes FROM '/home/gpadmin/zip_codes_states.csv' DELIMITER ',' CSV HEADER;
 
 drop table if exists SUSPECT ;
 create table SUSPECT (		
@@ -45,6 +46,7 @@ create table SUSPECT (
 	marked int
 ) distributed by (transaction_id);
 
+---
 
 create view suspect_view as (select t.*,marked_suspect_ts_millis,s.reason,s.marked 
 from transaction t left join suspect s on t.id=s.transaction_id);
