@@ -292,7 +292,7 @@ On the Greenplum server, run
 Open a browser and point to http://localhost:8080/index.html, in case of local deployment or to the URL given by CloudFoundry (if deploying to CF)
 
 
-Config the generator to not setup the PoS Devices (we've already done the setup before), set your preferred number of transactions (-1 indicates an infinite loop) and add the desired delay between transactions (helpful to show scalability by adding new instances)
+Now we'll config the generator to not setup the PoS Devices (we've already done the setup before), set your preferred number of transactions (-1 indicates an infinite loop) and add the desired delay between transactions (helpful to show scalability): 
 
 - If not using CloudFoundry, edit the application.properties file to loop like the following and start the emulator:
 
@@ -372,6 +372,7 @@ $ cf start pos_emulator
 #0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
 
 ----
+You can also scale the emulator to several instances in order to show scalability.
 
 Check your browser. You should notice transactions and possible frauds being shown.
 
