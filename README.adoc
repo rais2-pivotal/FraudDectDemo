@@ -4,7 +4,7 @@
 
 1 - Setup Greenplum Database
 
-  On an existing GPDB installation: 
+On an existing GPDB installation: 
 
   - Download + Install Madlib and Postgis
    
