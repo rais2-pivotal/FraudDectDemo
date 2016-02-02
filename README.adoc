@@ -421,7 +421,6 @@ $ ./gradlew build
 :test UP-TO-DATE
 :check UP-TO-DATE
 :build
-
 BUILD SUCCESSFUL
 
 $ cf push --no-start   
