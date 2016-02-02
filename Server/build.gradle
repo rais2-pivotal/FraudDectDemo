@@ -22,7 +22,7 @@ repositories {
 dependencies {
 
     compile ("io.pivotal.gemfire:gemfire-greenplum:1.0.0-beta-6-SNAPSHOT")
-    compile ("io.pivotal.gemfire:gemfire:8.2.0")
+    compile ("com.gemstone.gemfire:gemfire:8.1.0")
     compile ("org.apache.logging.log4j:log4j-core:2.4")	
     
 }
