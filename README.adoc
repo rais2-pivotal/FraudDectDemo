@@ -374,3 +374,5 @@ $ cf start pos_emulator
 ----
 
 Check your browser. You should notice transactions and possible frauds being shown.
+
+image::screenshot.png[Demo Screenshot]
