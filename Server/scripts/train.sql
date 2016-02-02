@@ -14,6 +14,7 @@ SELECT madlib.logregr_train(
     'irls'                                     -- optimizer
     );
      
+delete from suspect where reason='Manually Marked';
     
 drop view if exists fraud_view;
 
