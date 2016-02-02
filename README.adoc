@@ -109,9 +109,7 @@ Class-Path: /Users/fmelo/gemfire/lib/gemfire.jar:../../lib/gemfire-greenplum-1.0
 === 3- Start the Web Console
 
 
-In case you're not deploying it to CloudFoundry:
-
-- Export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
+- In case you're not deploying it to CloudFoundry, export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
 
 [source,bash]
 ----
@@ -151,7 +149,9 @@ $ ./gradlew jar
 BUILD SUCCESSFUL
 ----
 
-- Run the app
+Run the app
+
+- If not using CloudFoundry:
 
 [source,bash]
 ----
@@ -164,7 +164,7 @@ INFO: Started WebConsoleApp in 4.958 seconds (JVM running for 5.227)
 
 Make sure you can access the application at http://<host>:8080/index.html
 
-If you're deploying to CloudFoudry, just create a user-provided service as shown at __WebConsole/cf-createservice.txt__ and use the manifest at __WebConsole/manifest.yml__ to push the app.
+- If you're deploying to CloudFoudry, just create a user-provided service as shown at __WebConsole/cf-createservice.txt__ and use the manifest at __WebConsole/manifest.yml__ to push the app.
 
 [source,bash]
 ----
