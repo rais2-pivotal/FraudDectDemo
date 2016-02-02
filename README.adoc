@@ -65,6 +65,15 @@ INSERT 0 0
 ----
 
 $ cd Server
+$ ./gradlew serverJar
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:jar
+:serverJar
+
+BUILD SUCCESSFUL
+
 $ ./startup.sh
 
 1. Executing - start locator --name=locator --J=-Dgemfire.http-service-port=7575
