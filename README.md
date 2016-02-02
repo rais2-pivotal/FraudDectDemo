@@ -10,9 +10,9 @@ Steps to run the demo
    
    https://network.pivotal.io/products/pivotal-gpdb#/releases/1377/file_groups/250
 
-  - Copy the files __Server/scripts/zip_code_states.csv__ and __Server/scripts/*.s*__ to __/home/gpadmin__
+  - Copy the files __Server/scripts/zip_code_states.csv__ and __Server/scripts/\*.s\*__ to __/home/gpadmin__
   
-  $ scp scripts/zip_codes_states.csv scripts/*.s* gpadmin@192.168.9.132:/home/gpadmin
+  $ scp scripts/zip_codes_states.csv scripts/\*.s\* gpadmin@192.168.9.132:/home/gpadmin
 gpadmin@192.168.9.132's password:
 zip_codes_states.csv                                                            100% 2363KB   2.3MB/s   00:00
 model.sql                                                                       100% 5371     5.3KB/s   00:00
