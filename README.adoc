@@ -450,6 +450,6 @@ $ cf start pos_emulator
 ----
 You can also scale the emulator to several instances in order to show scalability.
 
-Check your browser. You should notice transactions and possible frauds being shown.
+Let it run for at least one minute while checking your browser. You should notice transactions and possible frauds being shown.
 
 image::screenshot.png[Demo Screenshot]
