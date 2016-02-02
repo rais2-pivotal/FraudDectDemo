@@ -146,7 +146,6 @@ BUILD SUCCESSFUL
 Total time: 4.495 secs
 
 $ cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
-cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
 Creating user provided service gemfire in org fmelo-org / space dev as fmelo...
 OK
 
@@ -169,6 +168,7 @@ OK
 (...)
      state     since                    cpu    memory         disk          details
 #0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
+
 -----
 
 Please substitute the IPs and Ports on the service creation command above with your GemFire locator connection details.
