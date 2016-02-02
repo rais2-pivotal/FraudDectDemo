@@ -53,10 +53,9 @@ SELECT 0
 psql:model.sql:62: ERROR:  view "transaction_info" does not exist
 CREATE VIEW
 INSERT 0 0  
-
 ----
 
- If you already have the demo setup and only wants to clean it up, just truncate the tables SUSPECT and TRANSACTION 
+If you already have the demo setup and only want to clean it up, just truncate the tables SUSPECT and TRANSACTION 
 
 
 === 2- Start the GemFire cluster
