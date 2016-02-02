@@ -10,7 +10,9 @@ applications:
     - gemfire
   env:
     skipSetup: true
-
+    numberOfTransactions: -1
+    delayInMs: 50
+    
 # cf push --no-start   
 # cf set-health-check pos_emulator none
 # cf start pos_emulator    

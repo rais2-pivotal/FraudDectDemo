@@ -60,7 +60,6 @@ split_part(p.location, ' ', 1) like z.county and trim(split_part(p.location, ','
 
 
 drop view transaction_info;
-
 create view transaction_info as
 WITH suspect_device as (select t.device_id as device_id, count(t.id) as suspect_count from transaction t LEFT OUTER JOIN suspect s ON (t.id=s.transaction_id) group by t.device_id),
 device_data as ( select d.*, suspect_device.suspect_count from pos_data d left outer join suspect_device on (suspect_device.device_id = d.id) ) ,
@@ -83,31 +82,7 @@ where t.account_id = h.account_id and t.device_id = d.id and t.account_id = a.ac
 --::::::::::::::
 insert into suspect (select id,device_id,ts_millis,'Manually Marked',1 from transaction_info where distancekm>200 and percentage>.75 or mph > 200);
 
-
---::::::::::::::
---Train Model
---::::::::::::::
-
-drop table suspect_logregr cascade;
-drop table suspect_logregr_summary cascade;
-SELECT madlib.logregr_train(
-    'transaction_info',                                 -- source table
-    'suspect_logregr',                         -- output table
-    'marked',                            -- labels
-    'ARRAY[1, distancekm, percentage,mph]',       -- features
-    NULL,                                       -- grouping columns
-    20,                                         -- max number of iteration
-    'irls'                                     -- optimizer
-    );
-    
  
- 
-
-drop view if exists fraud_view;
-
-create view fraud_view as ( SELECT s.id,s.device_id,s.transaction_value,s.ts_millis,'ML Prediction' as reason,s.distancekm,s.percentage,s.account_id, ma
-dlib.logregr_predict(coef, ARRAY[1, distancekm, percentage,mph]) as fraud,s.marked,madlib.logregr_predict_prob(coef, ARRAY[1, distancekm, percentage,mph
-]) as prob FROM transaction_info s, suspect_logregr l ORDER BY marked desc, fraud desc);
 
 
 

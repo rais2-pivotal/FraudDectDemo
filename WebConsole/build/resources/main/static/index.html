@@ -298,9 +298,7 @@ d3.select(self.frameElement).style("height", height + "px");
         	 
     		
     	});
-        
-        $.post("controller/refreshFraudAlertsFromGPDB");        
-    		
+            		
     		
     		/*
     		selectedNodes = 
@@ -371,5 +369,15 @@ d3.select(self.frameElement).style("height", height + "px");
         setTimeout(updateData, 800);
 	    
 	};
+	
+    var loadFromGPDB = function() {
+    	
+        $.post("controller/refreshFraudAlertsFromGPDB");            	
+    	setTimeout(loadFromGPDB, 10000);
+    };
+    
+    
+	
+	
 
 </script>
