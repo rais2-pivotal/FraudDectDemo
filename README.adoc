@@ -56,7 +56,7 @@ INSERT 0 0
 
 ----
 
-  If you already have the demo setup and only wants to clean it up, truncate the tables SUSPECT and TRANSACTION
+  If you already have the demo setup and only wants to clean it up, just truncate the tables SUSPECT and TRANSACTION 
 
 
 2- Start the GemFire cluster
@@ -103,6 +103,12 @@ In case you're not deploying it to CloudFoundry:
 
 - Export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
 
+[source,bash]
+----
+$ export locatorHost=<your_host_or_ip>
+$ export locatorPort=10334
+----
+
 - Run the app
 
 [source,bash]
@@ -120,12 +126,52 @@ If you're deploying to CloudFoudry, just create a user-provided service as shown
 
 [source,bash]
 ----
-$ cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
-$ cf push
+$ ./gradlew build
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:findMainClass
+:jar
+:bootRepackage
+:assemble
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:check UP-TO-DATE
+:build
 
+BUILD SUCCESSFUL
+
+Total time: 4.495 secs
+
+$ cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
+cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
+Creating user provided service gemfire in org fmelo-org / space dev as fmelo...
+OK
+
+$ more manifest.yml
+---
+applications:
+- name: webconsole
+  memory: 512M
+  instances: 1
+  host: webconsole
+  path: build/libs/WebConsole.jar
+  services:
+    - gemfire
+
+$ cf push
+Using manifest file /Users/fmelo/sko/WebConsole/manifest.yml
+
+Creating app webconsole in org fmelo-org / space dev as fmelo...
+OK
+(...)
+     state     since                    cpu    memory         disk          details
+#0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
 -----
 
-Please substitute the IPs and Ports above with your GemFire locator connection details.
+Please substitute the IPs and Ports on the service creation command above with your GemFire locator connection details.
 
 
 4- Generate a few transactions to train the Machine Learning process
@@ -147,9 +193,46 @@ If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set t
 
 [source,bash]
 ----
+$ more manifest.yml
+---
+applications:
+- name: pos_emulator
+  memory: 512M
+  instances: 1
+  host: pos_emulator
+  path: build/libs/PoS_Emulator.jar
+  no-route: true
+  services:
+    - gemfire
+  env:
+    skipSetup: false
+    numberOfTransactions: 10000
+    delayInMs: 5
+
 $ cf push --no-start   
+Using manifest file /Users/fmelo/sko/PoS_Emulator/manifest.yml
+
+Creating app pos_emulator in org fmelo-org / space dev as fmelo...
+OK
+
+App pos_emulator is a worker, skipping route creation
+Uploading pos_emulator...
+Uploading app files from: /Users/fmelo/sko/PoS_Emulator/build/libs/PoS_Emulator.jar
+Uploading 322.2K, 86 files
+Done uploading
+OK
+Binding service gemfire to app pos_emulator in org fmelo-org / space dev as fmelo...
+OK
+
 $ cf set-health-check pos_emulator none
+Updating pos_emulator health_check_type to 'none'
+OK
+
 $ cf start pos_emulator
+(...)
+     state     since                    cpu    memory         disk          details
+#0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
+
 ----
 
 5- Train the Machine Learning process
