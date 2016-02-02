@@ -93,7 +93,7 @@ body, html{
 		            <table class="scroll-table">
 	            	<thead id="table_header">
 	            		<tr>
-	            			<th colspan="3" style="text-align: center; width: 100%; font-size: 15px; padding-top: 10px; padding-bottom: 10px">
+	            			<th colspan="3" style="text-align: center; width: 237px; font-size: 15px; padding-top: 10px; padding-bottom: 10px">
 	            				Suspect Transactions
 	            			</th>
 	            		</tr>
@@ -221,6 +221,11 @@ d3.select(self.frameElement).style("height", height + "px");
 /* 
  * 
  */
+
+	 var loadFromGPDB = function() {
+	 	
+	     $.post("controller/refreshFraudAlertsFromGPDB");            	
+	 };
 
     
 
@@ -366,15 +371,10 @@ d3.select(self.frameElement).style("height", height + "px");
 
         
     	
+	    setTimeout(loadFromGPDB, 5000);
         setTimeout(updateData, 800);
-	    
 	};
 	
-    var loadFromGPDB = function() {
-    	
-        $.post("controller/refreshFraudAlertsFromGPDB");            	
-    	setTimeout(loadFromGPDB, 10000);
-    };
     
     
 	

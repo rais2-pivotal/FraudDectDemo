@@ -41,14 +41,16 @@ public class SuspectTransactionListener extends CacheListenerAdapter
 		
 		if (obj instanceof PdxInstance){			
 			transactionId = ((Number)((PdxInstance)obj).getField("transactionId")).longValue();
-			reason = (String)((PdxInstance)obj).getField("reason");
-			
+			reason = ((String)((PdxInstance)obj).getField("reason")).trim();
+			if (reason.equalsIgnoreCase("Manually Marked")){
+				return;
+			}
 			try{
 				PdxInstance transaction = GeodeClient.getInstance().getTransaction(transactionId);
 				deviceId = ((Number)transaction.getField("deviceId")).longValue();
 				value = ((Number)transaction.getField("value")).doubleValue();			
 				timestamp = ((Number)transaction.getField("timestamp")).longValue();
-				String location = GeodeClient.getInstance().getPoSLocation(deviceId);
+				String location = GeodeClient.getInstance().getPoSLocation(deviceId).trim();
 				
 				TransactionsMap.suspiciousTransactions.addTransaction(transactionId, value, location, true, reason, timestamp);
 			}

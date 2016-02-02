@@ -18,8 +18,8 @@ public class CheckTransactionLimitCacheWriter extends CacheWriterAdapter impleme
 		
 		PdxInstance transaction = (PdxInstance)event.getNewValue();
 		
-		// randomly mark 2% of the transactions as suspicious
-		if (random.nextDouble()<0.02){
+		// randomly mark 0.2% of the transactions as suspicious
+		if (random.nextDouble()<0.002){
 			long transactionId;
 			long deviceId;
 			

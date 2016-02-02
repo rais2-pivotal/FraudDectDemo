@@ -37,18 +37,18 @@ th {
 
 #messages {
     height:270px;
-    width:340px;
+    width:430px;
     position: fixed;
     margin-top:20px;    
     top: 180px;
-    right: 180px;
+    right: 160px;
 }
 
 #scrollable{      
 	overflow:auto;	
     position: fixed;
     height:270px;
-    width:340px;
+    width:430px;
         
     
 }
