@@ -234,7 +234,7 @@ numberOfAccounts=5000
 # negative number means it will keep posting continuously
 numberOfTransactions=100000  
 
-$ ./gradlew run
+$ ./gradlew bootRun
 
 2016-02-01 17:23:47.075  INFO 33355 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : Starting TransactionEmulatorApp on FrederiMelosMBP with PID 33355 (/Users/fmelo/sko/PoS_Emulator/build/classes/main started by fmelo in /Users/fmelo/sko/PoS_Emulator)
 2016-02-01 17:23:47.078  INFO 33355 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : No active profile set, falling back to default profiles: default
@@ -278,6 +278,24 @@ applications:
     skipSetup: false
     numberOfTransactions: 10000
     delayInMs: 5
+
+$ ./gradlew build
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:findMainClass
+:jar
+:bootRepackage
+:assemble
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:check UP-TO-DATE
+:build
+
+BUILD SUCCESSFUL
+
 
 $ cf push --no-start   
 Using manifest file /Users/fmelo/sko/PoS_Emulator/manifest.yml
@@ -351,7 +369,7 @@ numberOfAccounts=5000
 # negative number means it will keep posting continuously
 numberOfTransactions=-1
 
-$ ./gradlew run
+$ ./gradlew bootRun
 2016-02-01 16:53:54.764  INFO 33149 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : Starting TransactionEmulatorApp on FrederiMelosMBP with PID 33149 (/Users/fmelo/sko/PoS_Emulator/build/classes/main started by fmelo in /Users/fmelo/sko/PoS_Emulator)
 2016-02-01 16:53:54.766  INFO 33149 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : No active profile set, falling back to default profiles: default
 2016-02-01 16:53:54.808  INFO 33149 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@25bbf683: startup date [Mon Feb 01 16:53:54 PST 2016]; root of context hierarchy
@@ -387,6 +405,23 @@ applications:
     skipSetup: true
     numberOfTransactions: -1
     delayInMs: 50
+
+$ ./gradlew build
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:findMainClass
+:jar
+:bootRepackage
+:assemble
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:check UP-TO-DATE
+:build
+
+BUILD SUCCESSFUL
 
 $ cf push --no-start   
 Using manifest file /Users/fmelo/sko/PoS_Emulator/manifest.yml
