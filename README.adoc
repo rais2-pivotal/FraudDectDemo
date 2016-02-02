@@ -219,7 +219,7 @@ Please substitute the IPs and Ports on the service creation command above with y
 
 We'll tell the generator to setup the PoS Devices and add 100000 transactions initially. 
 
-If not using CloudFoundry, edit the application.properties file to loop like the following:
+- If not using CloudFoundry, edit the application.properties file to look like the following:
 
 [source,bash]
 ----
@@ -260,7 +260,7 @@ BUILD SUCCESSFUL
 
 ----
 
-If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
+- If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
 
 [source,bash]
 ----
