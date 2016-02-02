@@ -331,17 +331,18 @@ On the Greenplum server, run
 $  psql -d gemfire -f train.sql
 ----
 
-You can also configure this to run at each X minutes using a cron job or a solution like Spring XD.
+You will also configure this to run at each 10 minutes using a cron job (next step) 
 
-=== 6- Setup the Machine Learning evaluation on cron
+=== 6- Setup the Machine Learning train and evaluation on cron
 
 On the Greenplum server, run
 
 [source,bash]
 ----
-[gpadmin@gpdb-sandbox ~]$ chmod u+x /home/gpadmin/prediction.sh
+[gpadmin@gpdb-sandbox ~]$ chmod u+x /home/gpadmin/*.sh
 [gpadmin@gpdb-sandbox ~]$ sudo su
 [root@gpdb-sandbox gpadmin]# echo "* *  *  *  * gpadmin  . /home/gpadmin/.bashrc;/home/gpadmin/prediction.sh" >> /etc/crontab
+[root@gpdb-sandbox gpadmin]# echo "*/10 *  *  *  * gpadmin  . /home/gpadmin/.bashrc;/home/gpadmin/train.sh" >> /etc/crontab
 [root@gpdb-sandbox gpadmin]# /etc/init.d/crond reload;exit
 ----
 
