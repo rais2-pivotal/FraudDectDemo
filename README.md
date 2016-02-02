@@ -2,9 +2,53 @@
 
 Steps to run the demo
 
-1- Create the GPDB model on file Server/scripts/model.sql
+1 - Setup Greenplum Database
 
-If you already have GPDB setup, truncate the tables SUSPECT and TRANSACTION
+  On an existing GPDB installation: 
+
+  - Download + Install Madlib and Postgis
+   
+   https://network.pivotal.io/products/pivotal-gpdb#/releases/1377/file_groups/250
+
+  - Copy the files __Server/scripts/zip_code_states.csv__ and __Server/scripts/\*.s\*__ to __/home/gpadmin__
+  
+  $ scp scripts/zip_codes_states.csv scripts/\*.s\* gpadmin@192.168.9.132:/home/gpadmin
+gpadmin@192.168.9.132's password:
+zip_codes_states.csv                                                            100% 2363KB   2.3MB/s   00:00
+model.sql                                                                       100% 5371     5.3KB/s   00:00
+predict.sql                                                                     100%  102     0.1KB/s   00:00
+prediction.sh                                                                   100%  402     0.4KB/s   00:00
+
+  - Login to the Greenplum DB instance and run the model.sql script. This will create the table structures we're using. Please ignore the '"transaction_info" doesn't exist' error, if it's your first time running it.
+  
+  [gpdb-sandbox ~]$ psql -d gemfire -f model.sql
+
+DROP TABLE
+CREATE TABLE
+psql:model.sql:23: NOTICE:  drop cascades to rule _RETURN on view transaction_info
+psql:model.sql:23: NOTICE:  drop cascades to view transaction_info
+psql:model.sql:23: NOTICE:  drop cascades to rule _RETURN on view suspect_view
+psql:model.sql:23: NOTICE:  drop cascades to view suspect_view
+DROP TABLE
+CREATE TABLE
+DROP TABLE
+psql:model.sql:36: NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'zip' as the Greenplum Database data distribution key for this table.
+HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
+CREATE TABLE
+COPY 42180
+DROP TABLE
+CREATE TABLE
+CREATE VIEW
+DROP TABLE
+psql:model.sql:59: NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column(s) named 'id' as the Greenplum Database data distribution key for this table.
+HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
+SELECT 0
+psql:model.sql:62: ERROR:  view "transaction_info" does not exist
+CREATE VIEW
+INSERT 0 0  
+
+
+    If you already have the demo setup and only wants to clean it up, truncate the tables SUSPECT and TRANSACTION
 
 
 2- Start the GemFire cluster
@@ -12,15 +56,82 @@ If you already have GPDB setup, truncate the tables SUSPECT and TRANSACTION
 $ cd Server
 $ ./startup.sh
 
+1. Executing - start locator --name=locator --J=-Dgemfire.http-service-port=7575
+
+.............................
+Locator in /Users/fmelo/sko/Server/locator on frederimelosmbp[10334] as locator is currently online.
+Process ID: 33127
+Uptime: 15 seconds
+GemFire Version: 8.2.0
+Java Version: 1.8.0_40
+Log File: /Users/fmelo/sko/Server/locator/locator.log
+JVM Arguments: -Dgemfire.enable-cluster-configuration=true -Dgemfire.load-cluster-configuration-from-dir=false -Dgemfire.http-service-port=7575 -Dgemfire.launcher.registerSignalHandlers=true -Djava.awt.headless=true -Dsun.rmi.dgc.server.gcInterval=9223372036854775806
+Class-Path: /Users/fmelo/gemfire/lib/gemfire.jar:/Users/fmelo/gemfire/lib/locator-dependencies.jar
+
+Successfully connected to: [host=frederimelosmbp, port=1099]
+
+Cluster configuration service is up and running.
+
+2. Executing - start server --name=server1 --cache-xml-file=src/main/resources/server-cache.xml --classpath='../../lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar:../../lib/postgresql-9.4-1206-jdbc4.jar:../build/libs/Server.jar' --J=-Dgemfire.start-dev-rest-api=true --J=-Dgemfire.http-service-port=8888 --locators=geode-server[10334]
+
+...........
+Server in /Users/fmelo/sko/Server/server1 on frederimelosmbp[40404] as server1 is currently online.
+Process ID: 33128
+Uptime: 5 seconds
+GemFire Version: 8.2.0
+Java Version: 1.8.0_40
+Log File: /Users/fmelo/sko/Server/server1/server1.log
+JVM Arguments: -Dgemfire.cache-xml-file=/Users/fmelo/sko/Server/src/main/resources/server-cache.xml -Dgemfire.locators=geode-server[10334] -Dgemfire.use-cluster-configuration=true -Dgemfire.start-dev-rest-api=true -Dgemfire.http-service-port=8888 -XX:OnOutOfMemoryError=kill -KILL %p -Dgemfire.launcher.registerSignalHandlers=true -Djava.awt.headless=true -Dsun.rmi.dgc.server.gcInterval=9223372036854775806
+Class-Path: /Users/fmelo/gemfire/lib/gemfire.jar:../../lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar:../../lib/postgresql-9.4-1206-jdbc4.jar:../build/libs/Server.jar:/Users/fmelo/gemfire/lib/server-dependencies.jar
+
+
 3- Start the Web Console
+
+In case you're not deploying it to CloudFoundry:
+
+Export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
 
 $ cd WebConsole
 $ ./gradlew bootRun
+(...)
+Feb 01, 2016 4:52:51 PM io.pivotal.demo.sko.ui.WebConsoleApp logStarted
+INFO: Started WebConsoleApp in 4.958 seconds (JVM running for 5.227)
 
 
-4- Start the Emulator
+Make sure you can access the application at http://<host>:8080/index.html
+
+If you're deploying to CloudFoudry, just create a user-provided service as shown at __WebConsole/cf-createservice.txt__ and use the manifest at __WebConsole/manifest.yml__ to push the app.
+
+$ cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
+$ cf push
+
+Please substitute the IPs and Ports above with your GemFire locator connection details.
+
+
+4- Generate a few transactions to train the Machine Learning process
+
+We'll tell the generator to setup the PoS Devices and add 100000 transactions initially:
+
+If not using CloudFoundry:
 
 $ cd PoS_Emulator
+$ sed -i '' -- 's/numberOfTransactions=-1/numberOfTransactions=100000/g' src/main/resources/application.properties
+$ sed -i '' -- 's/skipSetup=true/skipSetup=false/g' src/main/resources/application.properties
 $ ./gradlew bootRun
 
+If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
 
+$ cf push --no-start   
+$ cf set-health-check pos_emulator none
+$ cf start pos_emulator
+
+
+5- Train the Machine Learning process
+
+On the Greenplum server, run 
+
+$  psql -d gemfire -f train.sql
+
+You can also configure this to run at each X minutes using cron.
+
+6- 
