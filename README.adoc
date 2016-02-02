@@ -341,9 +341,11 @@ On the Greenplum server, run
 ----
 [gpadmin@gpdb-sandbox ~]$ chmod u+x /home/gpadmin/prediction.sh
 [gpadmin@gpdb-sandbox ~]$ sudo su
-[root@gpdb-sandbox gpadmin]# echo "*/2 *  *  *  * gpadmin  . /home/gpadmin/.bashrc;/home/gpadmin/prediction.sh" >> /etc/crontab
+[root@gpdb-sandbox gpadmin]# echo "* *  *  *  * gpadmin  . /home/gpadmin/.bashrc;/home/gpadmin/prediction.sh" >> /etc/crontab
 [root@gpdb-sandbox gpadmin]# /etc/init.d/crond reload;exit
 ----
+
+This will make sure the evaluation process for the ML model runs every minute.
 
 === 8- Access the WebConsole and run the emulator to see results
 
