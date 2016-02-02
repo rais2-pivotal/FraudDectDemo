@@ -175,17 +175,47 @@ Please substitute the IPs and Ports on the service creation command above with y
 
 === 4- Generate a few transactions to train the Machine Learning process
 
-We'll tell the generator to setup the PoS Devices and add 100000 transactions initially:
+We'll tell the generator to setup the PoS Devices and add 100000 transactions initially. 
 
-If not using CloudFoundry:
+If not using CloudFoundry, edit the application.properties file to loop like the following:
 
 [source,bash]
 ----
-
 $ cd PoS_Emulator
-$ sed -i '' -- 's/numberOfTransactions=-1/numberOfTransactions=100000/g' src/main/resources/application.properties
-$ sed -i '' -- 's/skipSetup=true/skipSetup=false/g' src/main/resources/application.properties
-$ ./gradlew bootRun
+$ more src/main/resources/application.properties
+
+# replace with your GemFire/Geode endpoint
+geodeUrl=http://192.168.9.1:8888/gemfire-api/v1/ 
+delayInMs=5
+skipSetup=false
+numberOfAccounts=5000
+
+# negative number means it will keep posting continuously
+numberOfTransactions=100000  
+
+$ ./gradlew run
+
+2016-02-01 17:23:47.075  INFO 33355 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : Starting TransactionEmulatorApp on FrederiMelosMBP with PID 33355 (/Users/fmelo/sko/PoS_Emulator/build/classes/main started by fmelo in /Users/fmelo/sko/PoS_Emulator)
+2016-02-01 17:23:47.078  INFO 33355 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : No active profile set, falling back to default profiles: default
+2016-02-01 17:23:47.111  INFO 33355 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@25bbf683: startup date [Mon Feb 01 17:23:47 PST 2016]; root of context hierarchy
+2016-02-01 17:23:47.672  INFO 33355 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2016-02-01 17:23:47.689  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : >>>>> RUNNING SETUP
+2016-02-01 17:23:47.689  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 17:23:47.689  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : >>> Geode rest endpoint: http://192.168.9.1:8888/gemfire-api/v1/
+2016-02-01 17:23:47.690  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 17:23:47.690  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : >>> Adding 3143 devices ...
+2016-02-01 17:23:55.508  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : >>>>> RUNNING SIMULATION
+2016-02-01 17:23:55.508  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 17:23:55.509  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : >>> Geode rest endpoint: http://192.168.9.1:8888/gemfire-api/v1/
+2016-02-01 17:23:55.509  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 17:23:55.509  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : >>> Posting 100000 transactions ...
+2016-02-01 17:48:24.855  INFO 33355 --- [           main] io.pivotal.demo.sko.Emulator             : done
+2016-02-01 17:48:24.933  INFO 33355 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : Started TransactionEmulatorApp in 1478.061 seconds (JVM running for 1478.397)
+2016-02-01 17:48:24.940  INFO 33355 --- [       Thread-1] s.c.a.AnnotationConfigApplicationContext : Closing org.springframework.context.annotation.AnnotationConfigApplicationContext@25bbf683: startup date [Mon Feb 01 17:23:47 PST 2016]; root of context hierarchy
+2016-02-01 17:48:24.954  INFO 33355 --- [       Thread-1] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+
+BUILD SUCCESSFUL
+
 ----
 
 If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
@@ -257,4 +287,90 @@ On the Greenplum server, run
 [root@gpdb-sandbox gpadmin]# /etc/init.d/crond reload;exit
 ----
 
-=== 7- Run the emulator and see the results
+=== 8- Access the WebConsole and run the emulator to see results
+
+- Open a browser and point to http://localhost:8080/index.html, in case of local deployment or to the URL given by CloudFoundry (if deploying to CF)
+
+
+- Config the generator to not setup the PoS Devices (we've already done the setup before), set your preferred number of transactions (-1 indicates an infinite loop) and add the desired delay between transactions (helpful to show scalability by adding new instances)
+
+If not using CloudFoundry, edit the application.properties file to loop like the following:
+
+[source,bash]
+----
+$ cd PoS_Emulator
+$ more src/main/resources/application.properties
+
+# replace with your GemFire/Geode endpoint
+geodeUrl=http://192.168.9.1:8888/gemfire-api/v1/ 
+delayInMs=50
+skipSetup=true
+numberOfAccounts=5000
+
+# negative number means it will keep posting continuously
+numberOfTransactions=-1
+
+$ ./gradlew run
+2016-02-01 16:53:54.764  INFO 33149 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : Starting TransactionEmulatorApp on FrederiMelosMBP with PID 33149 (/Users/fmelo/sko/PoS_Emulator/build/classes/main started by fmelo in /Users/fmelo/sko/PoS_Emulator)
+2016-02-01 16:53:54.766  INFO 33149 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : No active profile set, falling back to default profiles: default
+2016-02-01 16:53:54.808  INFO 33149 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@25bbf683: startup date [Mon Feb 01 16:53:54 PST 2016]; root of context hierarchy
+2016-02-01 16:53:55.450  INFO 33149 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2016-02-01 16:53:55.466  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : >>>>> RUNNING SETUP
+2016-02-01 16:53:55.466  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 16:53:55.466  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : >>> Geode rest endpoint: http://192.168.9.1:8888/gemfire-api/v1/
+2016-02-01 16:53:55.466  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 16:54:04.909  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : >>>>> RUNNING SIMULATION
+2016-02-01 16:54:04.909  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 16:54:04.909  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : >>> Geode rest endpoint: http://192.168.9.1:8888/gemfire-api/v1/
+2016-02-01 16:54:04.909  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : --------------------------------------
+2016-02-01 16:54:04.909  INFO 33149 --- [           main] io.pivotal.demo.sko.Emulator             : >>> Posting 2147483647 transactions ...
+(...)
+----
+
+If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to config the properties:
+
+[source,bash]
+----
+$ more manifest.yml
+---
+applications:
+- name: pos_emulator
+  memory: 512M
+  instances: 1
+  host: pos_emulator
+  path: build/libs/PoS_Emulator.jar
+  no-route: true
+  services:
+    - gemfire
+  env:
+    skipSetup: true
+    numberOfTransactions: -1
+    delayInMs: 50
+
+$ cf push --no-start   
+Using manifest file /Users/fmelo/sko/PoS_Emulator/manifest.yml
+
+Creating app pos_emulator in org fmelo-org / space dev as fmelo...
+OK
+
+App pos_emulator is a worker, skipping route creation
+Uploading pos_emulator...
+Uploading app files from: /Users/fmelo/sko/PoS_Emulator/build/libs/PoS_Emulator.jar
+Uploading 322.2K, 86 files
+Done uploading
+OK
+Binding service gemfire to app pos_emulator in org fmelo-org / space dev as fmelo...
+OK
+
+$ cf set-health-check pos_emulator none
+Updating pos_emulator health_check_type to 'none'
+OK
+
+$ cf start pos_emulator
+(...)
+     state     since                    cpu    memory         disk          details
+#0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
+
+----
+
+Check your browser. You should notice transactions and possible frauds being shown.
