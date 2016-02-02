@@ -55,7 +55,6 @@ CREATE VIEW
 INSERT 0 0  
 ----
 
-If you already have the demo setup and only want to clean it up, just truncate the table SUSPECT
 
 
 === 2- Start the GemFire cluster
