@@ -77,10 +77,6 @@ where t.account_id = h.account_id and t.device_id = d.id and t.account_id = a.ac
 
 
 
---::::::::::::::
---Add some suspect rows
---::::::::::::::
-insert into suspect (select id,device_id,ts_millis,'Manually Marked',1 from transaction_info where distancekm>200 and percentage>.75 or mph > 200);
 
  
 
