@@ -168,8 +168,7 @@ OK
 (...)
      state     since                    cpu    memory         disk          details
 #0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
-
------
+----
 
 Please substitute the IPs and Ports on the service creation command above with your GemFire locator connection details.
 
