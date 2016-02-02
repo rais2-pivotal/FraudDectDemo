@@ -53,10 +53,8 @@ SELECT 0
 psql:model.sql:62: ERROR:  view "transaction_info" does not exist
 CREATE VIEW
 INSERT 0 0  
-
 ----
 
- If you already have the demo setup and only wants to clean it up, just truncate the tables SUSPECT and TRANSACTION 
 
 
 === 2- Start the GemFire cluster
@@ -65,6 +63,15 @@ INSERT 0 0
 ----
 
 $ cd Server
+$ ./gradlew serverJar
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:jar
+:serverJar
+
+BUILD SUCCESSFUL
+
 $ ./startup.sh
 
 1. Executing - start locator --name=locator --J=-Dgemfire.http-service-port=7575
@@ -99,9 +106,8 @@ Class-Path: /Users/fmelo/gemfire/lib/gemfire.jar:../../lib/gemfire-greenplum-1.0
 
 === 3- Start the Web Console
 
-In case you're not deploying it to CloudFoundry:
 
-- Export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
+- In case you're not deploying it to CloudFoundry, export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
 
 [source,bash]
 ----
@@ -109,7 +115,41 @@ $ export locatorHost=<your_host_or_ip>
 $ export locatorPort=10334
 ----
 
-- Run the app
+- Compile the app
+
+As the GemFire-Greenplum connector is not GA yet, we'll add the provided bits (under the "lib" directory) to your local maven repository in order to compile the source code: (you'll need maven installed, of course)
+
+[source,bash]
+----
+$ mvn install:install-file -Dfile=lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar -DgroupId=io.pivotal.gemfire -DartifactId=gemfire-greenplum -Dversion=1.0.0-beta-6-SNAPSHOT -Dpackaging=jar
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-install-plugin:2.4:install-file (default-cli) @ standalone-pom ---
+[INFO] Installing /Users/fmelo/sko/lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar to /Users/fmelo/.m2/repository/io/pivotal/gemfire/gemfire-greenplum/1.0.0-beta-6-SNAPSHOT/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 0.271 s
+[INFO] Finished at: 2016-02-01T19:50:39-08:00
+[INFO] Final Memory: 8M/309M
+[INFO] ------------------------------------------------------------------------
+$ cd WebConsole
+$ ./gradlew jar
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:jar
+
+BUILD SUCCESSFUL
+----
+
+Run the app
+
+- If not using CloudFoundry:
 
 [source,bash]
 ----
@@ -122,7 +162,7 @@ INFO: Started WebConsoleApp in 4.958 seconds (JVM running for 5.227)
 
 Make sure you can access the application at http://<host>:8080/index.html
 
-If you're deploying to CloudFoudry, just create a user-provided service as shown at __WebConsole/cf-createservice.txt__ and use the manifest at __WebConsole/manifest.yml__ to push the app.
+- If you're deploying to CloudFoudry, just create a user-provided service as shown at __WebConsole/cf-createservice.txt__ and use the manifest at __WebConsole/manifest.yml__ to push the app.
 
 [source,bash]
 ----
@@ -177,7 +217,7 @@ Please substitute the IPs and Ports on the service creation command above with y
 
 We'll tell the generator to setup the PoS Devices and add 100000 transactions initially. 
 
-If not using CloudFoundry, edit the application.properties file to loop like the following:
+- If not using CloudFoundry, edit the application.properties file to look like the following:
 
 [source,bash]
 ----
@@ -193,7 +233,7 @@ numberOfAccounts=5000
 # negative number means it will keep posting continuously
 numberOfTransactions=100000  
 
-$ ./gradlew run
+$ ./gradlew bootRun
 
 2016-02-01 17:23:47.075  INFO 33355 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : Starting TransactionEmulatorApp on FrederiMelosMBP with PID 33355 (/Users/fmelo/sko/PoS_Emulator/build/classes/main started by fmelo in /Users/fmelo/sko/PoS_Emulator)
 2016-02-01 17:23:47.078  INFO 33355 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : No active profile set, falling back to default profiles: default
@@ -218,7 +258,7 @@ BUILD SUCCESSFUL
 
 ----
 
-If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
+- If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
 
 [source,bash]
 ----
@@ -237,6 +277,24 @@ applications:
     skipSetup: false
     numberOfTransactions: 10000
     delayInMs: 5
+
+$ ./gradlew build
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:findMainClass
+:jar
+:bootRepackage
+:assemble
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:check UP-TO-DATE
+:build
+
+BUILD SUCCESSFUL
+
 
 $ cf push --no-start   
 Using manifest file /Users/fmelo/sko/PoS_Emulator/manifest.yml
@@ -289,10 +347,10 @@ On the Greenplum server, run
 
 === 8- Access the WebConsole and run the emulator to see results
 
-- Open a browser and point to http://localhost:8080/index.html, in case of local deployment or to the URL given by CloudFoundry (if deploying to CF)
+Open a browser and point to http://localhost:8080/index.html, in case of local deployment or to the URL given by CloudFoundry (if deploying to CF)
 
 
-- Config the generator to not setup the PoS Devices (we've already done the setup before), set your preferred number of transactions (-1 indicates an infinite loop) and add the desired delay between transactions (helpful to show scalability by adding new instances)
+Now we'll config the generator to not setup the PoS Devices (we've already done the setup before), set your preferred number of transactions (-1 indicates an infinite loop) and add the desired delay between transactions (helpful to show scalability): 
 
 - If not using CloudFoundry, edit the application.properties file to loop like the following and start the emulator:
 
@@ -310,7 +368,7 @@ numberOfAccounts=5000
 # negative number means it will keep posting continuously
 numberOfTransactions=-1
 
-$ ./gradlew run
+$ ./gradlew bootRun
 2016-02-01 16:53:54.764  INFO 33149 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : Starting TransactionEmulatorApp on FrederiMelosMBP with PID 33149 (/Users/fmelo/sko/PoS_Emulator/build/classes/main started by fmelo in /Users/fmelo/sko/PoS_Emulator)
 2016-02-01 16:53:54.766  INFO 33149 --- [           main] i.p.demo.sko.TransactionEmulatorApp      : No active profile set, falling back to default profiles: default
 2016-02-01 16:53:54.808  INFO 33149 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@25bbf683: startup date [Mon Feb 01 16:53:54 PST 2016]; root of context hierarchy
@@ -347,6 +405,23 @@ applications:
     numberOfTransactions: -1
     delayInMs: 50
 
+$ ./gradlew build
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:findMainClass
+:jar
+:bootRepackage
+:assemble
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:check UP-TO-DATE
+:build
+
+BUILD SUCCESSFUL
+
 $ cf push --no-start   
 Using manifest file /Users/fmelo/sko/PoS_Emulator/manifest.yml
 
@@ -372,5 +447,8 @@ $ cf start pos_emulator
 #0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
 
 ----
+You can also scale the emulator to several instances in order to show scalability.
 
 Check your browser. You should notice transactions and possible frauds being shown.
+
+image::screenshot.png[Demo Screenshot]
