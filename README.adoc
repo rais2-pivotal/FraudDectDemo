@@ -346,7 +346,7 @@ On the Greenplum server, run
 [root@gpdb-sandbox gpadmin]# /etc/init.d/crond reload;exit
 ----
 
-This will make sure the evaluation process for the ML model runs every minute.
+This will make sure the ML model is evaluated every minute and is re-trained at each 10 minutes.
 
 === 8- Access the WebConsole and run the emulator to see results
 
