@@ -294,7 +294,7 @@ On the Greenplum server, run
 
 - Config the generator to not setup the PoS Devices (we've already done the setup before), set your preferred number of transactions (-1 indicates an infinite loop) and add the desired delay between transactions (helpful to show scalability by adding new instances)
 
-If not using CloudFoundry, edit the application.properties file to loop like the following:
+- If not using CloudFoundry, edit the application.properties file to loop like the following and start the emulator:
 
 [source,bash]
 ----
@@ -327,7 +327,7 @@ $ ./gradlew run
 (...)
 ----
 
-If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to config the properties:
+- If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to config the properties and push the app:
 
 [source,bash]
 ----
