@@ -55,8 +55,8 @@ public class SuspectTransactionListener extends CacheListenerAdapter
 				TransactionsMap.suspiciousTransactions.addTransaction(transactionId, value, location, true, reason, timestamp);
 			}
 			catch(IllegalArgumentException ie){
-				Logger.getAnonymousLogger().warning("An invalid suspect transaction was found in GPDB. Please clean-up old data.");				
-				Logger.getAnonymousLogger().warning(ie.getMessage());				
+				// This usually means a suspect based on a transaction row not available anymore in Gem (for example, expired)
+				// ignore.				
 			}
 			
 			
