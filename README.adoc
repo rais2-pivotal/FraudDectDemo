@@ -1,6 +1,6 @@
-# wwko2016-demo
+= GemFire - Greenplum Demo
 
-Steps to run the demo
+== Steps to run the demo
 
 1 - Setup Greenplum Database
 
@@ -12,15 +12,22 @@ Steps to run the demo
 
   - Copy the files __Server/scripts/zip_code_states.csv__ and __Server/scripts/\*.s\*__ to __/home/gpadmin__
   
-  $ scp scripts/zip_codes_states.csv scripts/\*.s\* gpadmin@192.168.9.132:/home/gpadmin
-gpadmin@192.168.9.132's password:
-zip_codes_states.csv                                                            100% 2363KB   2.3MB/s   00:00
-model.sql                                                                       100% 5371     5.3KB/s   00:00
-predict.sql                                                                     100%  102     0.1KB/s   00:00
-prediction.sh                                                                   100%  402     0.4KB/s   00:00
+[source,bash]
+----
+ $ scp scripts/zip_codes_states.csv scripts/\*.s\* gpadmin@192.168.9.132:/home/gpadmin
+
+ gpadmin@192.168.9.132's password:
+ zip_codes_states.csv                                                            100% 2363KB   2.3MB/s   00:00
+ model.sql                                                                       100% 5371     5.3KB/s   00:00
+ predict.sql                                                                     100%  102     0.1KB/s   00:00
+ prediction.sh                                                                   100%  402     0.4KB/s   00:00
+----
 
   - Login to the Greenplum DB instance and run the model.sql script. This will create the table structures we're using. Please ignore the '"transaction_info" doesn't exist' error, if it's your first time running it.
-  
+
+[source,bash]
+----
+
   [gpdb-sandbox ~]$ psql -d gemfire -f model.sql
 
 DROP TABLE
@@ -47,11 +54,15 @@ psql:model.sql:62: ERROR:  view "transaction_info" does not exist
 CREATE VIEW
 INSERT 0 0  
 
+----
 
-    If you already have the demo setup and only wants to clean it up, truncate the tables SUSPECT and TRANSACTION
+  If you already have the demo setup and only wants to clean it up, truncate the tables SUSPECT and TRANSACTION
 
 
 2- Start the GemFire cluster
+
+[source,bash]
+----
 
 $ cd Server
 $ ./startup.sh
@@ -84,26 +95,35 @@ Log File: /Users/fmelo/sko/Server/server1/server1.log
 JVM Arguments: -Dgemfire.cache-xml-file=/Users/fmelo/sko/Server/src/main/resources/server-cache.xml -Dgemfire.locators=geode-server[10334] -Dgemfire.use-cluster-configuration=true -Dgemfire.start-dev-rest-api=true -Dgemfire.http-service-port=8888 -XX:OnOutOfMemoryError=kill -KILL %p -Dgemfire.launcher.registerSignalHandlers=true -Djava.awt.headless=true -Dsun.rmi.dgc.server.gcInterval=9223372036854775806
 Class-Path: /Users/fmelo/gemfire/lib/gemfire.jar:../../lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar:../../lib/postgresql-9.4-1206-jdbc4.jar:../build/libs/Server.jar:/Users/fmelo/gemfire/lib/server-dependencies.jar
 
+----
 
 3- Start the Web Console
 
 In case you're not deploying it to CloudFoundry:
 
-Export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
+- Export the "locatorHost" and "locatorPort" environment variables to point to your GemFire locator endpoint. It defaults to "geode-server" on port 10334
 
+- Run the app
+
+[source,bash]
+----
 $ cd WebConsole
 $ ./gradlew bootRun
 (...)
 Feb 01, 2016 4:52:51 PM io.pivotal.demo.sko.ui.WebConsoleApp logStarted
 INFO: Started WebConsoleApp in 4.958 seconds (JVM running for 5.227)
-
+----
 
 Make sure you can access the application at http://<host>:8080/index.html
 
 If you're deploying to CloudFoudry, just create a user-provided service as shown at __WebConsole/cf-createservice.txt__ and use the manifest at __WebConsole/manifest.yml__ to push the app.
 
+[source,bash]
+----
 $ cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
 $ cf push
+
+-----
 
 Please substitute the IPs and Ports above with your GemFire locator connection details.
 
@@ -114,23 +134,32 @@ We'll tell the generator to setup the PoS Devices and add 100000 transactions in
 
 If not using CloudFoundry:
 
+[source,bash]
+----
+
 $ cd PoS_Emulator
 $ sed -i '' -- 's/numberOfTransactions=-1/numberOfTransactions=100000/g' src/main/resources/application.properties
 $ sed -i '' -- 's/skipSetup=true/skipSetup=false/g' src/main/resources/application.properties
 $ ./gradlew bootRun
+----
 
 If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
 
+[source,bash]
+----
 $ cf push --no-start   
 $ cf set-health-check pos_emulator none
 $ cf start pos_emulator
-
+----
 
 5- Train the Machine Learning process
 
 On the Greenplum server, run 
 
+[source,bash]
+----
 $  psql -d gemfire -f train.sql
+----
 
 You can also configure this to run at each X minutes using cron.
 
