@@ -243,6 +243,6 @@ On the Greenplum server, run
 $  psql -d gemfire -f train.sql
 ----
 
-You can also configure this to run at each X minutes using cron.
+You can also configure this to run at each X minutes using a cron job or a solution like Spring XD.
 
 6- 
