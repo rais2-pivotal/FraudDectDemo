@@ -2,7 +2,7 @@
 
 == Steps to run the demo
 
-1 - Setup Greenplum Database
+=== 1 - Setup Greenplum Database
 
 On an existing GPDB installation: 
 
@@ -56,10 +56,10 @@ INSERT 0 0
 
 ----
 
-ps: If you already have the demo setup and only wants to clean it up, just truncate the tables SUSPECT and TRANSACTION 
+ If you already have the demo setup and only wants to clean it up, just truncate the tables SUSPECT and TRANSACTION 
 
 
-2- Start the GemFire cluster
+=== 2- Start the GemFire cluster
 
 [source,bash]
 ----
@@ -97,7 +97,7 @@ Class-Path: /Users/fmelo/gemfire/lib/gemfire.jar:../../lib/gemfire-greenplum-1.0
 
 ----
 
-3- Start the Web Console
+=== 3- Start the Web Console
 
 In case you're not deploying it to CloudFoundry:
 
@@ -173,7 +173,7 @@ OK
 Please substitute the IPs and Ports on the service creation command above with your GemFire locator connection details.
 
 
-4- Generate a few transactions to train the Machine Learning process
+=== 4- Generate a few transactions to train the Machine Learning process
 
 We'll tell the generator to setup the PoS Devices and add 100000 transactions initially:
 
@@ -234,7 +234,7 @@ $ cf start pos_emulator
 
 ----
 
-5- Train the Machine Learning process
+=== 5- Train the Machine Learning process
 
 On the Greenplum server, run 
 
@@ -245,4 +245,4 @@ $  psql -d gemfire -f train.sql
 
 You can also configure this to run at each X minutes using a cron job or a solution like Spring XD.
 
-6- 
+=== 6- 
