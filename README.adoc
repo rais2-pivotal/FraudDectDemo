@@ -59,6 +59,31 @@ INSERT 0 0
 
 === 2- Start the GemFire cluster
 
+First we'll add the GemFire-Greenplum beta jars to a local Maven repository (this won't be necessary once the bits are released)
+
+[source,bash]
+----
+$ mvn install:install-file -Dfile=lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar -DgroupId=io.pivotal.gemfire -DartifactId=gemfire-greenplum -Dversion=1.0.0-beta-6-SNAPSHOT -Dpackaging=jar
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-install-plugin:2.4:install-file (default-cli) @ standalone-pom ---
+[INFO] Installing /Users/fmelo/FraudDetection-wwko/lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar to /Users/fmelo/.m2/repository/io/pivotal/gemfire/gemfire-greenplum/1.0.0-beta-6-SNAPSHOT/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 0.465 s
+[INFO] Finished at: 2016-02-10T20:41:44-07:00
+[INFO] Final Memory: 7M/123M
+[INFO] ------------------------------------------------------------------------
+----
+
+Now, let's compile and start the GemFire cluster
+
 [source,bash]
 ----
 
