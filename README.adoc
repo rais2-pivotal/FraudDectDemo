@@ -71,51 +71,34 @@ Receiving objects: 100% (763/763), 127.95 MiB | 3.66 MiB/s, done.
 Resolving deltas: 100% (318/318), done.
 ----
 
-  - Copy the files __Server/scripts/zip_code_states.csv__ and __Server/scripts/\*.s\*__ to __/home/gpadmin__
+  - Change directory to /staging/FraudDectDemo/Server/scripts
   
-[source,bash]
-----
- $ scp scripts/zip_codes_states.csv scripts/\*.s\* gpadmin@192.168.9.132:/home/gpadmin
-
- gpadmin@192.168.9.132's password:
- zip_codes_states.csv                                                            100% 2363KB   2.3MB/s   00:00
- model.sql                                                                       100% 5371     5.3KB/s   00:00
- predict.sql                                                                     100%  102     0.1KB/s   00:00
- prediction.sh                                                                   100%  402     0.4KB/s   00:00
-----
-
   - Login to the Greenplum DB instance and run the model.sql script. This will create the table structures we're using. Please ignore the '"transaction_info" doesn't exist' error, if it's your first time running it.
 
-[source,bash]
 ----
-
-  [gpdb-sandbox ~]$ psql -d gemfire -f model.sql
-
+[gpadmin@localhost Server]$ psql -d gemfire -f model1.sql 
+psql:scripts/model1.sql:15: NOTICE:  table "pos_device" does not exist, skipping
 DROP TABLE
 CREATE TABLE
-psql:model.sql:23: NOTICE:  drop cascades to rule _RETURN on view transaction_info
-psql:model.sql:23: NOTICE:  drop cascades to view transaction_info
-psql:model.sql:23: NOTICE:  drop cascades to rule _RETURN on view suspect_view
-psql:model.sql:23: NOTICE:  drop cascades to view suspect_view
+psql:scripts/model1.sql:23: NOTICE:  table "transaction" does not exist, skipping
 DROP TABLE
 CREATE TABLE
+psql:scripts/model1.sql:33: NOTICE:  table "zip_codes" does not exist, skipping
 DROP TABLE
-psql:model.sql:36: NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'zip' as the Greenplum Database data distribution key for this table.
+psql:scripts/model1.sql:36: NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'zip' as the Greenplum Database data distribution key for this table.
 HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
 CREATE TABLE
 COPY 42180
+psql:scripts/model1.sql:40: NOTICE:  table "suspect" does not exist, skipping
 DROP TABLE
 CREATE TABLE
 CREATE VIEW
+psql:scripts/model1.sql:55: NOTICE:  table "pos_data" does not exist, skipping
 DROP TABLE
-psql:model.sql:59: NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column(s) named 'id' as the Greenplum Database data distribution key for this table.
+psql:scripts/model1.sql:59: NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column(s) named 'id' as the Greenplum Database data distribution key for this table.
 HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
 SELECT 0
-psql:model.sql:62: ERROR:  view "transaction_info" does not exist
-CREATE VIEW
-INSERT 0 0  
 ----
-
 
 
 === 2- Start the GemFire cluster
