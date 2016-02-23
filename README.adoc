@@ -36,9 +36,26 @@ Exiting...
 
 On an existing GPDB installation: 
 
-  - Download + Install Madlib and Postgis
+  - Download Madlib and Postgis binaries from the following link
    
    https://network.pivotal.io/products/pivotal-gpdb#/releases/1377/file_groups/250
+[NOTE]: The binaries have already been downloaded and available under '/staging' directory of this virtual machine. You can run the following commands to install it.
+
+  - Extract and install the madlib binaries
+----
+cd /staging
+tar -xzf madlib-ossv1.8_pv1.9.4_gpdb4.3orca-rhel5-x86_64.tgz
+cd GPDB_4.3
+[gpadmin@localhost GPDB_4.3]$ gppkg -i madlib-ossv1.8_pv1.9.4_gpdb4.3orca-rhel5-x86_64.gppkg
+
+$GPHOME/madlib/bin/madpack install -s madlib -p greenplum -c gpadmin@localhost:5432/gemfire
+----
+  - Extract and install the postgis binaries
+----
+[gpadmin@localhost staging]$ gppkg -i postgis-ossv2.0.3_pv2.0.1_gpdb4.3orca-rhel5-x86_64.gppkg
+
+psql -d gemfire -f $GPHOME/share/postgresql/contrib/postgis-2.0/postgis.sql
+----
 
   - Copy the files __Server/scripts/zip_code_states.csv__ and __Server/scripts/\*.s\*__ to __/home/gpadmin__
   
