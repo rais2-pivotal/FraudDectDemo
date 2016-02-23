@@ -16,7 +16,7 @@
 	<jndi-bindings>
 		<jndi-binding jndi-name="datasource" type="SimpleDataSource"
 			jdbc-driver-class="org.postgresql.Driver" user-name="pivotal"
-			password="pivotal" connection-url="jdbc:postgresql://192.168.9.132:5432/gemfire">
+			password="pivotal" connection-url="jdbc:postgresql://localhost:5432/gemfire">
 		</jndi-binding>
 	</jndi-bindings>
 	<region name="PoS">
