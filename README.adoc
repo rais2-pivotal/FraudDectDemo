@@ -3,10 +3,11 @@
 == Steps to run the demo
 
 === 0 - Pre-requisites
-Ensure that the following are installed
+Ensure that the following are installed and healthy
    - Greenplum Database 4.3.7.2
-     - Execute psql "
-
+----     
+psql -c "select version(); checkpoint;"
+----
 
 === 1 - Setup Greenplum Database
 
