@@ -2,6 +2,12 @@
 
 == Steps to run the demo
 
+=== 0 - Pre-requisites
+Ensure that the following are installed
+   - Greenplum Database 4.3.7.2
+     - Execute psql "
+
+
 === 1 - Setup Greenplum Database
 
 On an existing GPDB installation: 
