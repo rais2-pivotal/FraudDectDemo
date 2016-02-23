@@ -3,7 +3,7 @@
 == Steps to run the demo
 
 === 0 - Pre-requisites
-Ensure that the Greenplum database, java and Gefire are installed and healthy
+Ensure that the Greenplum database, java, maven and Gefire are installed and healthy
    - Greenplum Database 4.3.7.2
 ----     
 [gpadmin@localhost staging]$ psql -c "checkpoint; select version()"
