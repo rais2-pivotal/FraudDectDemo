@@ -1,2 +1,2 @@
 start locator --name=locator --J=-Dgemfire.http-service-port=7575
-start server --name=server1 --cache-xml-file=src/main/resources/server-cache.xml --classpath='../../lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar:../../lib/postgresql-9.4-1206-jdbc4.jar:../build/libs/Server.jar' --J=-Dgemfire.start-dev-rest-api=true --J=-Dgemfire.http-service-port=8888 --locators=geode-server[10334]
+start server --name=server1 --cache-xml-file=src/main/resources/server-cache.xml --classpath='../../lib/gemfire-greenplum-1.0.0-beta-6-SNAPSHOT.jar:../../lib/postgresql-9.4-1206-jdbc4.jar:../build/libs/Server.jar' --J=-Dgemfire.start-dev-rest-api=true --J=-Dgemfire.http-service-port=8888 --locators=localhost[10334]
