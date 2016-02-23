@@ -6,8 +6,6 @@
 Ensure that the following are installed and healthy
    - Greenplum Database 4.3.7.2
 ----     
-psql -c "checkpoint; select version"
-
 [gpadmin@localhost staging]$ psql -c "checkpoint; select version()"
                                                                        version                                                                        
 ------------------------------------------------------------------------------------------------------------------------------------------------------
