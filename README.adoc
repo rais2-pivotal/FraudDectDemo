@@ -84,7 +84,7 @@ Resolving deltas: 100% (318/318), done.
 
   - Change directory to /staging/FraudDectDemo/Server/scripts
   
-  - Login to the Greenplum DB instance and run the model.sql script. This will create the table structures we're using. Please ignore the '"transaction_info" doesn't exist' error, if it's your first time running it.
+  - Login to the Greenplum DB instance and run the model1.sql script. This will create the table structures we're using. Please ignore the '"transaction_info" doesn't exist' error, if it's your first time running it.
 
 ----
 [gpadmin@localhost Server]$ psql -d gemfire -f model1.sql 
@@ -260,7 +260,7 @@ skipSetup=false
 numberOfAccounts=5000
 
 # negative number means it will keep posting continuously
-numberOfTransactions=100000  
+numberOfTransactions=50000  
 
 $ ./gradlew bootRun
 
@@ -286,72 +286,12 @@ $ ./gradlew bootRun
 BUILD SUCCESSFUL
 
 ----
-
-- If using CloudFoudry, use the manifest at __PoS_Emulator/manifest.yml__ to set the properties __numberOfTransactions__ to 100000 and __skipSetup__ to false. Push the application disabling health check (we're not listening to a HTTP port):
-
-[source,bash]
+  - Create the pos_data and transaction_info objects which will retrieve data generated via transactions
+  
 ----
-$ more manifest.yml
----
-applications:
-- name: pos_emulator
-  memory: 512M
-  instances: 1
-  host: pos_emulator
-  path: build/libs/PoS_Emulator.jar
-  no-route: true
-  services:
-    - gemfire
-  env:
-    skipSetup: false
-    numberOfTransactions: 10000
-    delayInMs: 5
-
-$ ./gradlew build
-:compileJava UP-TO-DATE
-:processResources UP-TO-DATE
-:classes UP-TO-DATE
-:findMainClass
-:jar
-:bootRepackage
-:assemble
-:compileTestJava UP-TO-DATE
-:processTestResources UP-TO-DATE
-:testClasses UP-TO-DATE
-:test UP-TO-DATE
-:check UP-TO-DATE
-:build
-
-BUILD SUCCESSFUL
-
-
-$ cf push --no-start   
-Using manifest file /Users/fmelo/sko/PoS_Emulator/manifest.yml
-
-Creating app pos_emulator in org fmelo-org / space dev as fmelo...
-OK
-
-App pos_emulator is a worker, skipping route creation
-Uploading pos_emulator...
-Uploading app files from: /Users/fmelo/sko/PoS_Emulator/build/libs/PoS_Emulator.jar
-Uploading 322.2K, 86 files
-Done uploading
-OK
-Binding service gemfire to app pos_emulator in org fmelo-org / space dev as fmelo...
-OK
-
-$ cf set-health-check pos_emulator none
-Updating pos_emulator health_check_type to 'none'
-OK
-
-$ cf start pos_emulator
-(...)
-     state     since                    cpu    memory         disk          details
-#0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
-
+[gpadmin@localhost Server]$ psql -d gemfire -f model2.sql
 ----
 
-=== 5- Train the Machine Learning process
 
 On the Greenplum server, run 
 
