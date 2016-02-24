@@ -231,8 +231,6 @@ BUILD SUCCESSFUL
 
 Run the app
 
-- If not using CloudFoundry:
-
 [source,bash]
 ----
 $ cd WebConsole
@@ -244,62 +242,11 @@ INFO: Started WebConsoleApp in 4.958 seconds (JVM running for 5.227)
 
 Make sure you can access the application at http://<host>:8080/index.html
 
-- If you're deploying to CloudFoudry, just create a user-provided service as shown at __WebConsole/cf-createservice.txt__ and use the manifest at __WebConsole/manifest.yml__ to push the app.
-
-[source,bash]
-----
-$ ./gradlew build
-:compileJava UP-TO-DATE
-:processResources UP-TO-DATE
-:classes UP-TO-DATE
-:findMainClass
-:jar
-:bootRepackage
-:assemble
-:compileTestJava UP-TO-DATE
-:processTestResources UP-TO-DATE
-:testClasses UP-TO-DATE
-:test UP-TO-DATE
-:check UP-TO-DATE
-:build
-
-BUILD SUCCESSFUL
-
-Total time: 4.495 secs
-
-$ cf cups gemfire -p '{"locatorHost":"10.68.52.85","locatorPort":"10334", "RestAPI":"http://10.68.52.85:8888/gemfire-api/v1/"}'
-Creating user provided service gemfire in org fmelo-org / space dev as fmelo...
-OK
-
-$ more manifest.yml
----
-applications:
-- name: webconsole
-  memory: 512M
-  instances: 1
-  host: webconsole
-  path: build/libs/WebConsole.jar
-  services:
-    - gemfire
-
-$ cf push
-Using manifest file /Users/fmelo/sko/WebConsole/manifest.yml
-
-Creating app webconsole in org fmelo-org / space dev as fmelo...
-OK
-(...)
-     state     since                    cpu    memory         disk          details
-#0   running   2016-02-01 06:33:23 PM   0.0%   692K of 512M   26.7M of 1G
-----
-
-Please substitute the IPs and Ports on the service creation command above with your GemFire locator connection details.
-
-
 === 4- Generate a few transactions to train the Machine Learning process
 
 We'll tell the generator to setup the PoS Devices and add 100000 transactions initially. 
 
-- If not using CloudFoundry, edit the application.properties file to look like the following:
+- Ensure the application.properties file to look like the following:
 
 [source,bash]
 ----
@@ -307,7 +254,7 @@ $ cd PoS_Emulator
 $ more src/main/resources/application.properties
 
 # replace with your GemFire/Geode endpoint
-geodeUrl=http://192.168.9.1:8888/gemfire-api/v1/ 
+geodeUrl=http://localhost:8888/gemfire-api/v1/ 
 delayInMs=5
 skipSetup=false
 numberOfAccounts=5000
