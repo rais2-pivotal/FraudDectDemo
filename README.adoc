@@ -67,7 +67,9 @@ $GPHOME/madlib/bin/madpack install -s madlib -p greenplum -c gpadmin@localhost:5
 
 psql -d gemfire -f $GPHOME/share/postgresql/contrib/postgis-2.0/postgis.sql
 ----
-- Download the demo binaries using git 
+
+- Download the demo binaries using git. 
+
 ----
 [gpadmin@localhost staging]$ git clone https://github.com/rais2-pivotal/FraudDectDemo
 git: /usr/local/greenplum-db-4.3.7.2/lib/libz.so.1: no version information available (required by git)
